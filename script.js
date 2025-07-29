@@ -7,7 +7,7 @@ console.log('Location: Itagüí, Villa Paula');
 function openWhatsApp() {
     console.log('Opening WhatsApp chat');
     const message = encodeURIComponent('¡Hola! Me interesa conocer más sobre los servicios de Esencia Spa. ¿Podrían darme más información?');
-    const phoneNumber = '573001234567'; // Replace with actual WhatsApp number
+    const phoneNumber = '573023946941'; // Replace with actual WhatsApp number
     const whatsappURL = `https://wa.me/${phoneNumber}?text=${message}`;
     window.open(whatsappURL, '_blank');
 }
@@ -17,7 +17,7 @@ function bookService(serviceName, servicePrice = '') {
     console.log(`Booking service: ${serviceName}`);
     const priceText = servicePrice ? ` (${servicePrice})` : '';
     const message = encodeURIComponent(`¡Hola! Me gustaría reservar una cita para el servicio: ${serviceName}${priceText}. ¿Cuándo tienen disponibilidad?`);
-    const phoneNumber = '573001234567'; // Replace with actual WhatsApp number
+    const phoneNumber = '573023946941'; // Replace with actual WhatsApp number
     const whatsappURL = `https://wa.me/${phoneNumber}?text=${message}`;
     window.open(whatsappURL, '_blank');
 }
@@ -27,7 +27,7 @@ function purchaseProduct(productName, productPrice = '') {
     console.log(`Purchasing product: ${productName}`);
     const priceText = productPrice ? ` (${productPrice})` : '';
     const message = encodeURIComponent(`¡Hola! Me interesa comprar el producto: ${productName}${priceText}. ¿Podrían darme más información sobre disponibilidad y entrega?`);
-    const phoneNumber = '573001234567'; // Replace with actual WhatsApp number
+    const phoneNumber = '573023946941'; // Replace with actual WhatsApp number
     const whatsappURL = `https://wa.me/${phoneNumber}?text=${message}`;
     window.open(whatsappURL, '_blank');
 }
@@ -36,7 +36,7 @@ function purchaseProduct(productName, productPrice = '') {
 function requestConsultation() {
     console.log('Requesting free consultation');
     const message = encodeURIComponent('¡Hola! Me interesa la valoración GRATUITA para tratamiento de quiropodia. ¿Cuándo pueden atenderme?');
-    const phoneNumber = '573001234567'; // Replace with actual WhatsApp number
+    const phoneNumber = '573023946941'; // Replace with actual WhatsApp number
     const whatsappURL = `https://wa.me/${phoneNumber}?text=${message}`;
     window.open(whatsappURL, '_blank');
 }
