@@ -26,6 +26,53 @@ body::before {
     z-index: -1;
 }
 
+/* Floating WhatsApp Button */
+.whatsapp-float {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1000;
+    background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+    border-radius: 50%;
+    box-shadow: 0 8px 24px rgba(37,211,102,0.28);
+    width: 68px;
+    height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: box-shadow 0.2s, transform 0.2s;
+    border: 3px solid #fff;
+    animation: whatsappPulse 2.2s ease-in-out infinite;
+}
+
+.whatsapp-float:hover {
+    box-shadow: 0 12px 32px rgba(37,211,102,0.35);
+    transform: translateY(-2px) scale(1.04);
+}
+
+.whatsapp-float .whatsapp-icon,
+.whatsapp-float span {
+    width: 60px;
+    height: 60px;
+    display: block;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+    text-align: center;
+}
+
+@keyframes whatsappPulse {
+    0% { transform: scale(1); box-shadow: 0 8px 24px rgba(37,211,102,0.28); }
+    50% { transform: scale(1.06); box-shadow: 0 10px 28px rgba(37,211,102,0.36); }
+    100% { transform: scale(1); box-shadow: 0 8px 24px rgba(37,211,102,0.28); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .whatsapp-float {
+        animation: none;
+    }
+}
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -168,6 +215,14 @@ body:has(.logo-container) {
     text-decoration: none;
 }
 
+/* Logo image sizing for navbar */
+.nav-logo-img {
+    height: 64px;
+    width: 64px;
+    display: block;
+    object-fit: contain;
+}
+
 .mini-lotus {
     width: 30px;
     height: 30px;
@@ -250,6 +305,17 @@ body:has(.logo-container) {
     text-align: center;
     transition: transform 0.3s ease;
     border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.service-img {
+    width: 100%;
+    max-width: 240px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 14px;
+    margin: 0 auto 16px;
+    display: block;
+    box-shadow: 0 4px 16px rgba(233, 30, 99, 0.12);
 }
 
 .service-card:hover {
