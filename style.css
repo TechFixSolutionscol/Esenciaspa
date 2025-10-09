@@ -274,9 +274,15 @@ body:has(.logo-container) {
 
 .page-header h2 {
     font-size: 2.5rem;
-    color: #d81b60;
+    color: #000000;
     margin-bottom: 15px;
     font-weight: 300;
+    text-shadow:
+    0 0 8px #fff,
+    0 0 16px #f48fb1,
+    0 0 24px #e91e63,
+    0 0 32px #ad1457;
+color: #fff;
 }
 
 .page-header p {
