@@ -350,6 +350,14 @@ color: #fff;
     line-height: 1.5;
 }
 
+.service-duration {
+    font-size: 0.95rem;
+    color: #ad1457;
+    font-weight: 500;
+    font-style: italic;
+    margin-bottom: 10px !important;
+}
+
 .price {
     font-size: 1.8rem;
     font-weight: bold;
@@ -408,6 +416,14 @@ color: #fff;
     color: #8e24aa;
     margin-bottom: 10px;
     font-size: 1rem;
+}
+
+.additional-duration {
+    font-size: 0.9rem;
+    color: #ad1457;
+    font-weight: 500;
+    font-style: italic;
+    margin: 5px 0 10px 0 !important;
 }
 
 .additional-price {
