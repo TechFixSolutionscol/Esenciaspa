@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -12,6 +12,525 @@
             background-position: center !important;
             background-repeat: no-repeat !important;
             background-attachment: fixed !important;
+        }
+
+        /* TIENDA ESTILOS */
+        .store-wrapper {
+            display: flex;
+            gap: 30px;
+            margin: 40px 0;
+            position: relative;
+        }
+
+        .store-section {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .product-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(216, 27, 96, 0.15);
+        }
+
+        .product-card.promo {
+            background: linear-gradient(135deg, #d81b60 0%, #8e24aa 100%);
+            color: white;
+        }
+
+        .product-card.promo .product-image {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 250px;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            overflow: hidden;
+            background: #f5f5f5;
+            position: relative;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+
+        .product-image.featured {
+            background: linear-gradient(135deg, #f5f5f5 0%, #eeeeee 100%);
+        }
+
+        .badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #d81b60;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            box-shadow: 0 2px 8px rgba(216, 27, 96, 0.3);
+        }
+
+        .promo-content {
+            text-align: center;
+            width: 100%;
+        }
+
+        .promo-content h3 {
+            font-size: 1.8rem;
+            margin: 0 0 20px 0;
+            color: white;
+        }
+
+        .promo-details p {
+            margin: 10px 0;
+            font-size: 0.95rem;
+        }
+
+        .product-info {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card.promo .product-info {
+            padding: 15px 20px;
+        }
+
+        .product-info h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+        .product-card.promo .product-info h3 {
+            color: white;
+        }
+
+        .product-size {
+            font-size: 0.9rem;
+            color: #ad1457;
+            font-weight: 500;
+            margin: 5px 0;
+        }
+
+        .product-card.promo .product-size {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .product-description {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.5;
+            margin: 10px 0;
+            flex: 1;
+        }
+
+        .product-card.promo .product-description {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .product-card.promo .product-footer {
+            border-top-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #d81b60;
+        }
+
+        .product-card.promo .product-price {
+            color: white;
+        }
+
+        .add-to-cart-btn {
+            background: linear-gradient(135deg, #e91e63 0%, #d81b60 100%);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .add-to-cart-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(216, 27, 96, 0.4);
+        }
+
+        .add-to-cart-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* CARRITO LATERAL */
+        .cart-sidebar {
+            width: 380px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 20px;
+            max-height: calc(100vh - 40px);
+        }
+
+        .cart-header {
+            padding: 20px;
+            border-bottom: 2px solid #f5f5f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-header h2 {
+            margin: 0;
+            font-size: 1.4rem;
+            color: #333;
+        }
+
+        .close-cart {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .cart-items-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px 0;
+            min-height: 150px;
+        }
+
+        .empty-cart {
+            padding: 40px 20px;
+            text-align: center;
+            color: #999;
+        }
+
+        .empty-cart p {
+            margin: 10px 0;
+            font-size: 0.95rem;
+        }
+
+        .small-text {
+            font-size: 0.85rem !important;
+            color: #bbb !important;
+        }
+
+        .cart-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .cart-item-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #f5f5f5;
+            flex-shrink: 0;
+        }
+
+        .cart-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .cart-item-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .cart-item-details h4 {
+            margin: 0 0 5px 0;
+            font-size: 0.95rem;
+            color: #333;
+            word-break: break-word;
+        }
+
+        .cart-item-details p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #d81b60;
+            font-weight: 600;
+        }
+
+        .cart-item-quantity {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .qty-btn {
+            background: #f0f0f0;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #666;
+            transition: all 0.2s;
+        }
+
+        .qty-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .qty-display {
+            width: 30px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .remove-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            color: #999;
+            padding: 2px 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.2s;
+        }
+
+        .remove-item:hover {
+            background: #fee;
+            border-color: #d81b60;
+            color: #d81b60;
+        }
+
+        .cart-footer {
+            padding: 20px;
+            border-top: 2px solid #f5f5f5;
+            background: #fafafa;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .cart-summary {
+            margin-bottom: 15px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            color: #666;
+        }
+
+        .summary-row.discount {
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        .summary-row.total {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #d81b60;
+            padding-top: 10px;
+            border-top: 2px solid #f0f0f0;
+            margin-top: 10px;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #d81b60 0%, #ad1457 100%);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .checkout-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(216, 27, 96, 0.3);
+        }
+
+        .checkout-btn:active {
+            transform: scale(0.98);
+        }
+
+        .checkout-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .clear-cart-btn {
+            width: 100%;
+            background: white;
+            color: #999;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.2s;
+        }
+
+        .clear-cart-btn:hover {
+            background: #fee;
+            border-color: #d81b60;
+            color: #d81b60;
+        }
+
+        /* NOTIFICACIÓN */
+        .notification {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: #333;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s ease;
+            z-index: 1000;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* SHIPPING INFO ACTUALIZADO */
+        .shipping-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .shipping-item {
+            background: rgba(216, 27, 96, 0.05);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #d81b60;
+        }
+
+        .shipping-item h4 {
+            margin: 0 0 10px 0;
+            color: #d81b60;
+            font-size: 1rem;
+        }
+
+        .shipping-item p {
+            margin: 0;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .store-wrapper {
+                flex-direction: column;
+            }
+
+            .cart-sidebar {
+                width: 100%;
+                position: relative;
+                top: 0;
+                max-height: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+            }
+
+            .cart-sidebar {
+                margin-top: 30px;
+            }
+
+            .close-cart {
+                display: block;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .product-image {
+                height: 200px;
+            }
+
+            .add-to-cart-btn {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
         }
     </style>
 </head>
@@ -36,71 +555,347 @@
             <p>Productos artesanales de origen natural para el cuidado de manos y pies</p>
         </div>
 
-        <section class="services-section">
-            <h3 class="section-title">👣 Línea Siloé 👣</h3>
-            <div class="services-grid">
-                <div class="service-card">
-                    <img src="assets/images/aceitevital.jpg" alt="Servicio Esencia Spa" class="service-img">
-                    <h4>Aceite Vital  100% artesanal 20 ml</h4>
-                    <p>aceites puros de origen natural, es un regenerador, hidratante y reparador cutaneo</p>
-                    <div class="price">$20.000</div>
-                    <button class="service-btn">Comprar</button>
+        <div class="store-wrapper">
+            <section class="store-section" id="store-main">
+                <div class="products-grid">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="assets/images/aceitevital.jpg" alt="Aceite Vital">
+                        </div>
+                        <div class="product-info">
+                            <h3>Aceite Vital</h3>
+                            <p class="product-size">20 ml | 100% artesanal</p>
+                            <p class="product-description">Aceites puros de origen natural. Regenerador, hidratante y reparador cutáneo.</p>
+                            <div class="product-footer">
+                                <span class="product-price">$20.000</span>
+                                <button class="add-to-cart-btn" onclick="addToCart({id: 1, name: 'Aceite Vital 20ml', price: 20000, image: 'assets/images/aceitevital.jpg'})">+ Agregar</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="assets/images/medivital.jpg" alt="MediVital">
+                        </div>
+                        <div class="product-info">
+                            <h3>MediVital</h3>
+                            <p class="product-size">30 ml | Solución tópica</p>
+                            <p class="product-description">Solución ungueal para el tratamiento de infecciones por hongos en las uñas.</p>
+                            <div class="product-footer">
+                                <span class="product-price">$35.000</span>
+                                <button class="add-to-cart-btn" onclick="addToCart({id: 2, name: 'MediVital 30ml', price: 35000, image: 'assets/images/medivital.jpg'})">+ Agregar</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="assets/images/crema.jpg" alt="FungiVital Crema">
+                        </div>
+                        <div class="product-info">
+                            <h3>FungiVital Crema</h3>
+                            <p class="product-size">30 gr | Crema</p>
+                            <p class="product-description">Con aceites puros y extractos naturales. Refrescante, reparadora e hidratante para los pies.</p>
+                            <div class="product-footer">
+                                <span class="product-price">$25.000</span>
+                                <button class="add-to-cart-btn" onclick="addToCart({id: 3, name: 'FungiVital Crema 30gr', price: 25000, image: 'assets/images/crema.jpg'})">+ Agregar</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-card">
+                        <div class="product-image featured">
+                            <img src="assets/images/kit.jpg" alt="Kit 1">
+                            <span class="badge">KIT</span>
+                        </div>
+                        <div class="product-info">
+                            <h3>Kit 1</h3>
+                            <p class="product-size">Aceite Vital + MediVital</p>
+                            <p class="product-description">Tratamiento completo para infecciones causadas por hongos en las uñas.</p>
+                            <div class="product-footer">
+                                <span class="product-price">$50.000</span>
+                                <button class="add-to-cart-btn" onclick="addToCart({id: 4, name: 'Kit 1 (Aceite + MediVital)', price: 50000, image: 'assets/images/kit.jpg'})">+ Agregar</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-card">
+                        <div class="product-image featured">
+                            <img src="assets/images/kit2.jpg" alt="Kit 2">
+                            <span class="badge">KIT COMPLETO</span>
+                        </div>
+                        <div class="product-info">
+                            <h3>Kit 2</h3>
+                            <p class="product-size">Aceite Vital + MediVital + FungiVital</p>
+                            <p class="product-description">Kit completo para el tratamiento integral de hongos en uñas.</p>
+                            <div class="product-footer">
+                                <span class="product-price">$70.000</span>
+                                <button class="add-to-cart-btn" onclick="addToCart({id: 5, name: 'Kit 2 (Aceite + MediVital + FungiVital)', price: 70000, image: 'assets/images/kit2.jpg'})">+ Agregar</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-card promo">
+                        <div class="product-image">
+                            <div class="promo-content">
+                                <h3>Descuentos</h3>
+                                <div class="promo-details">
+                                    <p><strong>Desde 6 productos:</strong> 10% Desc</p>
+                                    <p><strong>Desde 10 productos:</strong> 15% Desc</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <p class="product-description">Consulta nuestras promociones por cantidad. Al por mayor tienes ventajas exclusivas.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="cart-sidebar" id="cart-sidebar">
+                <div class="cart-header">
+                    <h2>Tu Carrito</h2>
+                    <button class="close-cart" onclick="toggleCart()">✕</button>
+                </div>
+                
+                <div class="cart-items-container" id="cart-items-list">
+                    <div class="empty-cart">
+                        <p>Tu carrito está vacío</p>
+                        <p class="small-text">Agrega productos para comenzar tu compra</p>
+                    </div>
                 </div>
 
-                <div class="service-card">
-                    <img src="assets/images/medivital.jpg" alt="Servicio Esencia Spa" class="service-img">
-                    <h4>MediVital</h4>
-                    <p>Es una solución tópica ungueal para el tratamiento de infecciones causados por hongos en las uñas 30ml</p>
-                    <div class="price">$ 35.000</div>
-                    <button class="service-btn">Comprar</button>
-                </div>
+                <div class="cart-footer">
+                    <div class="cart-summary">
+                        <div class="summary-row">
+                            <span>Subtotal:</span>
+                            <span id="subtotal">\</span>
+                        </div>
+                        <div class="summary-row discount" id="discount-row" style="display: none;">
+                            <span>Descuento:</span>
+                            <span id="discount">-\</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total:</span>
+                            <span id="total">\</span>
+                        </div>
+                    </div>
 
-                <div class="service-card">
-                    <img src="assets/images/crema.jpg" alt="Servicio Esencia Spa" class="service-img">
-                    <h4>FungiVital  Crema</h4>
-                    <p> con aceites puros y extractos de origen natural refrescante, reparadora e hidratante para los pies 30gr</p>
-                    <div class="price">$ 25.000</div>
-                    <button class="service-btn">Comprar</button>
+                    <button class="checkout-btn" id="checkout-btn" onclick="proceedToCheckout()">Proceder al Pago</button>
+                    <button class="clear-cart-btn" id="clear-btn" onclick="clearCart()" style="display: none;">Limpiar Carrito</button>
                 </div>
+            </aside>
+        </div>
 
-                <div class="service-card">
-                    <img src="assets/images/kit.jpg" alt="Servicio Esencia Spa" class="service-img">
-                    <h4>Kit 1 Aceite Vital + MediVital</h4>
-                    <p>Para el tratamiento de infecciones causados por hongos en las uñas</p>
-                    <div class="price">$ 50.000</div>
-                    <button class="service-btn">Comprar</button>
+        <section class="shipping-info">
+            <h3>🚚 Información de Entrega</h3>
+            <div class="shipping-grid">
+                <div class="shipping-item">
+                    <h4>Itagüí y cercanos</h4>
+                    <p>Realizamos entregas en Itagüí y municipios cercanos</p>
                 </div>
-
-                <div class="service-card">
-                    <img src="assets/images/kit2.jpg" alt="Servicio Esencia Spa" class="service-img">
-                    <h4>Kit 2 Aceite Vital + MediVital + FungiVital</h4>
-                    <p>Para el tratamiento de infecciones causados por hongos en las uñas</p>
-                    <div class="price">$ 70.000</div>
-                    <button class="service-btn">Comprar</button>
+                <div class="shipping-item">
+                    <h4>Tiempo de entrega</h4>
+                    <p>1-3 días hábiles en Itagüí</p>
                 </div>
-
-                <div class="service-card">
-                    <img src="assets/images/kit2.jpg" alt="Servicio Esencia Spa" class="service-img">
-                    <h4>Promociones</h4>
-                    <p>Al por mayor a partir de 6 tiene 10% descuento y a partir de 10 tiene un 15%</p>
-                    <div class="price">Primera compra</div>
-                    <button class="service-btn">Comprar</button>
+                <div class="shipping-item">
+                    <h4>Otras zonas</h4>
+                    <p>Consulta disponibilidad y costos de envío</p>
                 </div>
             </div>
         </section>
-
-        <div class="shipping-info">
-            <h3>🚚 Información de Entrega</h3>
-            <p>Realizamos entregas en Itagüí y municipios cercanos. Para pedidos fuera de esta zona, consulta disponibilidad y costos de envío.</p>
-            <p><strong>Tiempo de entrega:</strong> 1-3 días hábiles en Itagüí</p>
-        </div>
     </div>
 
-    <!-- Floating WhatsApp Button -->
     <div class="whatsapp-float" onclick="openWhatsApp()">
         <img src="assets/images/whatsapp_icon.png" alt="WhatsApp, botón flotante para contactar al spa por mensaje instantáneo" class="whatsapp-icon">
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        const CART_KEY = 'esenciaSpaCart';
+        const WHATSAPP_PHONE = '+573023946941';
+        let cart = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCart();
+            updateCartUI();
+        });
+
+        function saveCart() {
+            localStorage.setItem(CART_KEY, JSON.stringify(cart));
+            updateCartUI();
+        }
+
+        function loadCart() {
+            const saved = localStorage.getItem(CART_KEY);
+            cart = saved ? JSON.parse(saved) : [];
+        }
+
+        function addToCart(product) {
+            const existing = cart.find(item => item.id === product.id);
+            
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                product.quantity = 1;
+                cart.push(product);
+            }
+            
+            saveCart();
+            showNotification(product.name + ' agregado al carrito');
+        }
+
+        function updateQuantity(productId, newQuantity) {
+            const item = cart.find(item => item.id === productId);
+            
+            if (item) {
+                if (newQuantity > 0) {
+                    item.quantity = newQuantity;
+                } else {
+                    removeFromCart(productId);
+                    return;
+                }
+                saveCart();
+            }
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            saveCart();
+            showNotification('Producto eliminado del carrito');
+        }
+
+        function clearCart() {
+            if (cart.length > 0 && confirm('¿Estás seguro de que quieres vaciar el carrito?')) {
+                cart = [];
+                saveCart();
+            }
+        }
+
+        function updateCartUI() {
+            const cartCount = document.getElementById('cart-count');
+            const cartItemsList = document.getElementById('cart-items-list');
+            const subtotalEl = document.getElementById('subtotal');
+            const discountEl = document.getElementById('discount');
+            const discountRow = document.getElementById('discount-row');
+            const totalEl = document.getElementById('total');
+            const checkoutBtn = document.getElementById('checkout-btn');
+            const clearBtn = document.getElementById('clear-btn');
+
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalItems;
+
+            if (cart.length === 0) {
+                cartItemsList.innerHTML = '<div class="empty-cart"><p>Tu carrito está vacío</p><p class="small-text">Agrega productos para comenzar tu compra</p></div>';
+                subtotalEl.textContent = '$0';
+                discountRow.style.display = 'none';
+                totalEl.textContent = '$0';
+                checkoutBtn.disabled = true;
+                clearBtn.style.display = 'none';
+                return;
+            }
+
+            cartItemsList.innerHTML = cart.map(item => '<div class="cart-item"><div class="cart-item-image"><img src="' + item.image + '" alt="' + item.name + '"></div><div class="cart-item-details"><h4>' + item.name + '</h4><p>\$' + item.price.toLocaleString('es-CO') + '</p><div class="cart-item-quantity"><button class="qty-btn" onclick="updateQuantity(' + item.id + ', ' + (item.quantity - 1) + ')">−</button><span class="qty-display">' + item.quantity + '</span><button class="qty-btn" onclick="updateQuantity(' + item.id + ', ' + (item.quantity + 1) + ')">+</button><button class="remove-item" onclick="removeFromCart(' + item.id + ')">Eliminar</button></div></div></div>').join('');
+
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+            
+            let discount = 0;
+            let discountPercent = 0;
+
+            if (totalQuantity >= 10) {
+                discountPercent = 15;
+            } else if (totalQuantity >= 6) {
+                discountPercent = 10;
+            }
+
+            discount = subtotal * (discountPercent / 100);
+            const total = subtotal - discount;
+
+            subtotalEl.textContent = '\$' + subtotal.toLocaleString('es-CO');
+            
+            if (discountPercent > 0) {
+                discountEl.textContent = '-\$' + discount.toLocaleString('es-CO') + ' (' + discountPercent + '%)';
+                discountRow.style.display = 'flex';
+            } else {
+                discountRow.style.display = 'none';
+            }
+
+            totalEl.textContent = '\$' + total.toLocaleString('es-CO');
+            checkoutBtn.disabled = false;
+            clearBtn.style.display = 'block';
+        }
+
+        function proceedToCheckout() {
+            if (cart.length === 0) {
+                alert('El carrito está vacío');
+                return;
+            }
+
+            const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            let discountPercent = 0;
+            if (totalQuantity >= 10) {
+                discountPercent = 15;
+            } else if (totalQuantity >= 6) {
+                discountPercent = 10;
+            }
+
+            const discount = subtotal * (discountPercent / 100);
+            const total = subtotal - discount;
+
+            let message = '🛍️ *PEDIDO DE TIENDA LÍNEA SILOÉ*\n\n';
+            message += '*Productos:*\n';
+            
+            cart.forEach(item => {
+                message += '• ' + item.name + '\n';
+                message += '  Cantidad: ' + item.quantity + ' × \$' + item.price.toLocaleString('es-CO') + '\n';
+                message += '  Subtotal: \$' + (item.price * item.quantity).toLocaleString('es-CO') + '\n\n';
+            });
+
+            message += '*Resumen:*\n';
+            message += 'Subtotal: \$' + subtotal.toLocaleString('es-CO') + '\n';
+            
+            if (discountPercent > 0) {
+                message += 'Descuento (' + discountPercent + '%): -\$' + discount.toLocaleString('es-CO') + '\n';
+            }
+            
+            message += '*TOTAL: \$' + total.toLocaleString('es-CO') + '*\n\n';
+            message += '¿Podrías confirmar este pedido y el método de pago?';
+
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = 'https://wa.me/' + WHATSAPP_PHONE + '?text=' + encodedMessage;
+            window.open(whatsappUrl, '_blank');
+            
+            // Limpiar carrito después de enviar a WhatsApp
+            showNotification('Pedido enviado a WhatsApp. Carrito borrado.');
+            cart = [];
+            saveCart();
+        }
+
+        function toggleCart(event) {
+            if (event) event.preventDefault();
+            const sidebar = document.getElementById('cart-sidebar');
+            sidebar.style.display = sidebar.style.display === 'none' ? 'flex' : 'none';
+        }
+
+        function showNotification(message) {
+            const notif = document.createElement('div');
+            notif.className = 'notification';
+            notif.textContent = message;
+            document.body.appendChild(notif);
+
+            setTimeout(() => {
+                notif.remove();
+            }, 3000);
+        }
+
+        function openWhatsApp() {
+            const message = 'Hola, tengo una consulta sobre los servicios de Esencia Spa';
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = 'https://wa.me/' + WHATSAPP_PHONE + '?text=' + encodedMessage;
+            window.open(whatsappUrl, '_blank');
+        }
+    </script>
 </body>
 </html>
