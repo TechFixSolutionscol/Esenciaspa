@@ -54,7 +54,7 @@
         username = String(username).trim();
 
         // URL del Web App (coincide con SCRIPT_URL en script.js)
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwYg0MptACyrUfnDQNmC5Z6r5VLtB7i4kQ9WRtSFdOn-WxTy7JBZPbO5EwoUkCXgPmt/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx52WXG_TEBl7OQfb1B7njCla-dCF4kkU38PvqXhybV0X_S2dCLgIWpERvlvKp60L8N/exec';
 
         // Primero intentar autenticación remota
         try {

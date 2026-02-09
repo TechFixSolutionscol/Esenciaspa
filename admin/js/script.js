@@ -178,12 +178,42 @@ async function handleContactPost(e, action) {
     const type = action.includes('Proveedor') ? 'Proveedores' : 'Clientes';
     const prefix = action.includes('Proveedor') ? 'pr' : 'cl';
 
+    const nombreInput = document.getElementById(`c_nombre_${prefix}`).value.trim();
+    const documentoInput = document.getElementById(`c_documento_${prefix}`) ? document.getElementById(`c_documento_${prefix}`).value.trim() : '';
+
+    if (!nombreInput) {
+        showToast('El nombre es obligatorio', 'warning');
+        return;
+    }
+
+    // Validación de duplicados en frontend (usando caché)
+    let existingList = [];
+    if (type === 'Clientes') existingList = cachedData.clientes || [];
+    if (type === 'Proveedores') existingList = cachedData.proveedores || [];
+
+    // Validar por Documento (solo Clientes)
+    if (type === 'Clientes' && documentoInput) {
+        const existeDoc = existingList.find(c => String(c.documento || '').trim() === documentoInput);
+        if (existeDoc) {
+            showToast(`El cliente con cédula "${documentoInput}" ya existe: ${existeDoc.nombre}`, 'warning');
+            return;
+        }
+    }
+
+    // Validar por Nombre (Advertencia suave o bloqueo estricto, aquí bloqueo)
+    const existeNombre = existingList.find(c => c.nombre.toLowerCase() === nombreInput.toLowerCase());
+    if (existeNombre) {
+        showToast(`El ${type === 'Proveedores' ? 'proveedor' : 'cliente'} "${nombreInput}" ya está registrado.`, 'warning');
+        return;
+    }
+
     const contactData = {
         action: 'agregarRegistroGenerico',
         sheetName: type,
         data: {
             id: generateId(),
-            nombre: document.getElementById(`c_nombre_${prefix}`).value,
+            nombre: nombreInput,
+            documento: documentoInput, // Nuevo campo
             telefono: document.getElementById(`c_telefono_${prefix}`).value
         }
     };

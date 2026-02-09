@@ -69,6 +69,9 @@
                 <a href="#contactos" data-section="contactos">
                     <i class="fas fa-address-book"></i> Contactos
                 </a>
+                <a href="#citas-cotizaciones" data-section="citas-cotizaciones">
+                    <i class="fas fa-calendar-check"></i> Citas y Cotizaciones
+                </a>
                 <a href="#usuarios" data-section="usuarios">
                     <i class="fas fa-users"></i> Usuarios
                 </a>
@@ -543,6 +546,125 @@
                 </div>
             </section>
 
+            <!-- Sección: Citas y Cotizaciones (FASE 3) -->
+            <section id="citas-cotizaciones" class="content-section">
+                <h2><i class="fas fa-calendar-check"></i> Citas y Cotizaciones</h2>
+
+                <p class="status-message info" style="display:block;">
+                    Aquí puedes ver las citas pendientes con sus cotizaciones y convertirlas en ventas al finalizar el
+                    servicio.
+                </p>
+
+                <!-- Botones de control -->
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <button id="cargarCotizacionesBtn" class="btn primary-btn">
+                        <i class="fas fa-sync"></i> Actualizar Lista
+                    </button>
+                    <button id="verHistorialBtn" class="btn secondary-btn">
+                        <i class="fas fa-history"></i> Ver Historial
+                    </button>
+                </div>
+
+                <div id="statusCitasCotizaciones" class="status-message"></div>
+
+                <!-- Tabs -->
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e0e0e0;">
+                    <button id="tabPendientes" class="tab-btn active" data-tab="pendientes">
+                        <i class="fas fa-clock"></i> Pendientes (<span id="countPendientes">0</span>)
+                    </button>
+                    <button id="tabAtendidas" class="tab-btn" data-tab="atendidas">
+                        <i class="fas fa-check-circle"></i> Atendidas
+                    </button>
+                </div>
+
+                <!-- Contenedor Pestañas -->
+                <div id="tabContent">
+                    <!-- Tab: Cotizaciones Pendientes -->
+                    <div id="contentPendientes" class="tab-content active">
+                        <div style="max-height: 600px; overflow-y: auto;">
+                            <table class="data-table" id="cotizacionesPendientesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha Cita</th>
+                                        <th>Hora</th>
+                                        <th>Cliente</th>
+                                        <th>Teléfono</th>
+                                        <th>Servicio</th>
+                                        <th>Total</th>
+                                        <th>Estado Cita</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cotizacionesPendientesBody">
+                                    <tr>
+                                        <td colspan="8" style="text-align: center; padding: 40px;">
+                                            <i class="fas fa-inbox fa-3x" style="color: #ccc;"></i>
+                                            <p style="color: #999; margin-top: 10px;">Presiona "Actualizar Lista" para
+                                                cargar
+                                                cotizaciones</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Atendidas (Historial) -->
+                    <div id="contentAtendidas" class="tab-content">
+                        <p style="color: #666; text-align: center; padding: 40px;">
+                            <i class="fas fa-info-circle"></i>
+                            Funcionalidad de historial disponible próximamente
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Modal: Finalizar Servicio -->
+            <div id="modalFinalizarServicio" class="modal" style="display: none;">
+                <div class="modal-content" style="max-width: 500px;">
+                    <div class="modal-header"
+                        style="background: var(--secondary-color); color: white; padding: 20px; border-radius: 12px 12px 0 0;">
+                        <h3 style="margin: 0;"><i class="fas fa-check-circle"></i> Finalizar Servicio</h3>
+                        <span class="close-modal" style="cursor: pointer; font-size: 24px;"
+                            onclick="cerrarModalFinalizar()">&times;</span>
+                    </div>
+                    <div class="modal-body" style="padding: 30px;">
+                        <div id="resumenServicio"
+                            style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                            <!-- Se llena dinámicamente -->
+                        </div>
+
+                        <div class="form-group">
+                            <label for="metodoPago"><b>Método de Pago:</b></label>
+                            <select id="metodoPago"
+                                style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #e0e0e0;">
+                                <option value="Efectivo">Efectivo</option>
+                                <option value="Tarjeta">Tarjeta</option>
+                                <option value="Transferencia">Transferencia</option>
+                                <option value="Nequi">Nequi</option>
+                                <option value="Daviplata">Daviplata</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="observacionesPago">Observaciones (opcional):</label>
+                            <textarea id="observacionesPago" rows="3"
+                                style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #e0e0e0;"
+                                placeholder="Notas adicionales..."></textarea>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button id="btnConfirmarVenta" class="btn primary-btn" style="flex: 1;">
+                                <i class="fas fa-dollar-sign"></i> Confirmar Venta
+                            </button>
+                            <button onclick="cerrarModalFinalizar()" class="btn secondary-btn" style="flex: 1;">
+                                <i class="fas fa-times"></i> Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Sección 7: Configuración -->
             <section id="configuracion" class="content-section">
                 <h2><i class="fas fa-cog"></i> Configuración de Base de Datos</h2>
@@ -595,6 +717,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="js/script.js"></script>
     <script src="js/user_management.js"></script>
+    <script src="js/citas_cotizaciones.js"></script>
 
     <!-- Contenedor de Toasts -->
     <div id="toast-container"

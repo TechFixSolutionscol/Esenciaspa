@@ -15,11 +15,15 @@ function openWhatsApp() {
 // Service booking function
 function bookService(serviceName, servicePrice = '') {
     console.log(`Booking service: ${serviceName}`);
-    const priceText = servicePrice ? ` (${servicePrice})` : '';
-    const message = encodeURIComponent(`¡Hola! Me gustaría reservar una cita para el servicio: ${serviceName}${priceText}. ¿Cuándo tienen disponibilidad?`);
-    const phoneNumber = '573023946941'; // Replace with actual WhatsApp number
-    const whatsappURL = `https://wa.me/${phoneNumber}?text=${message}`;
-    window.open(whatsappURL, '_blank');
+
+    // Guardar servicio seleccionado en sessionStorage para auto-completar formulario
+    sessionStorage.setItem('selectedService', JSON.stringify({
+        nombre: serviceName,
+        precio: servicePrice
+    }));
+
+    // Redirigir a página de reservas
+    window.location.href = 'reservar-cita.html';
 }
 
 // Product purchase function
@@ -45,7 +49,7 @@ function requestConsultation() {
 function smoothScrollTo(elementId) {
     const element = document.getElementById(elementId);
     if (element) {
-        element.scrollIntoView({ 
+        element.scrollIntoView({
             behavior: 'smooth',
             block: 'start'
         });
@@ -53,18 +57,18 @@ function smoothScrollTo(elementId) {
 }
 
 // Initialize page functionality
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     console.log('DOM Content Loaded - Initializing features');
 
     // Service buttons event listeners
     const serviceButtons = document.querySelectorAll('.service-btn');
     serviceButtons.forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             const serviceCard = this.closest('.service-card');
             const serviceName = serviceCard.querySelector('h4').textContent;
             const priceElement = serviceCard.querySelector('.price');
             const servicePrice = priceElement ? priceElement.textContent : '';
-            
+
             // Special handling for consultation services
             if (this.textContent.includes('Valoración Gratuita')) {
                 requestConsultation();
@@ -77,12 +81,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Buy buttons event listeners
     const buyButtons = document.querySelectorAll('.buy-btn');
     buyButtons.forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             const productCard = this.closest('.product-card');
             const productName = productCard.querySelector('h4').textContent;
             const priceElement = productCard.querySelector('.product-price');
             const productPrice = priceElement ? priceElement.textContent : '';
-            
+
             purchaseProduct(productName, productPrice);
         });
     });
@@ -90,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Additional service cards (if any)
     const additionalCards = document.querySelectorAll('.additional-card');
     additionalCards.forEach(card => {
-        card.addEventListener('click', function() {
+        card.addEventListener('click', function () {
             const serviceName = this.querySelector('h5').textContent;
             const servicePrice = this.querySelector('.additional-price').textContent;
             bookService(serviceName, servicePrice);
@@ -102,11 +106,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add hover effects to cards
     const allCards = document.querySelectorAll('.service-card, .product-card');
     allCards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
+        card.addEventListener('mouseenter', function () {
             this.style.transform = 'translateY(-8px) scale(1.02)';
         });
-        
-        card.addEventListener('mouseleave', function() {
+
+        card.addEventListener('mouseleave', function () {
             this.style.transform = 'translateY(0) scale(1)';
         });
     });
@@ -114,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Smooth scrolling for anchor links
     const anchorLinks = document.querySelectorAll('a[href^="#"]');
     anchorLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
+        link.addEventListener('click', function (e) {
             e.preventDefault();
             const targetId = this.getAttribute('href').substring(1);
             smoothScrollTo(targetId);
@@ -149,11 +153,11 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // WhatsApp floating button enhancement
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const whatsappButton = document.querySelector('.whatsapp-float');
     if (whatsappButton) {
         // Add click analytics
-        whatsappButton.addEventListener('click', function() {
+        whatsappButton.addEventListener('click', function () {
             console.log('WhatsApp button clicked');
             // Here you could add analytics tracking
             // gtag('event', 'whatsapp_click', { 'event_category': 'contact' });
@@ -198,24 +202,24 @@ function getFromStorage(key) {
 // Shopping cart functionality (placeholder for future implementation)
 const ShoppingCart = {
     items: [],
-    
-    add: function(item) {
+
+    add: function (item) {
         this.items.push(item);
         console.log('Item added to cart:', item);
         this.updateUI();
     },
-    
-    remove: function(itemId) {
+
+    remove: function (itemId) {
         this.items = this.items.filter(item => item.id !== itemId);
         console.log('Item removed from cart:', itemId);
         this.updateUI();
     },
-    
-    getTotal: function() {
+
+    getTotal: function () {
         return this.items.reduce((total, item) => total + (item.price * item.quantity), 0);
     },
-    
-    updateUI: function() {
+
+    updateUI: function () {
         console.log('Cart updated:', this.items);
         // Future: Update cart UI elements
     }
@@ -224,14 +228,14 @@ const ShoppingCart = {
 // Appointment booking system (placeholder)
 const AppointmentSystem = {
     availableSlots: [],
-    
-    checkAvailability: function(date) {
+
+    checkAvailability: function (date) {
         console.log('Checking availability for:', date);
         // Future: Integrate with booking API
         return true;
     },
-    
-    bookAppointment: function(appointmentData) {
+
+    bookAppointment: function (appointmentData) {
         console.log('Booking appointment:', appointmentData);
         // Future: Send to booking system
         return { success: true, confirmationId: 'ESP' + Date.now() };
@@ -242,23 +246,23 @@ const AppointmentSystem = {
 const ImageGallery = {
     currentIndex: 0,
     images: [],
-    
-    init: function(images) {
+
+    init: function (images) {
         this.images = images;
         console.log('Gallery initialized with', images.length, 'images');
     },
-    
-    next: function() {
+
+    next: function () {
         this.currentIndex = (this.currentIndex + 1) % this.images.length;
         this.updateDisplay();
     },
-    
-    prev: function() {
+
+    prev: function () {
         this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
         this.updateDisplay();
     },
-    
-    updateDisplay: function() {
+
+    updateDisplay: function () {
         console.log('Displaying image:', this.currentIndex);
         // Future: Update gallery UI
     }
@@ -267,14 +271,14 @@ const ImageGallery = {
 // Search functionality (for future product/service search)
 const SearchSystem = {
     searchTerms: [],
-    
-    search: function(query) {
+
+    search: function (query) {
         console.log('Searching for:', query);
         // Future: Implement search logic
         return [];
     },
-    
-    filter: function(items, criteria) {
+
+    filter: function (items, criteria) {
         console.log('Filtering items by:', criteria);
         // Future: Implement filtering logic
         return items;
@@ -289,16 +293,16 @@ function trackEvent(eventName, eventData = {}) {
 }
 
 // Error handling
-window.addEventListener('error', function(e) {
+window.addEventListener('error', function (e) {
     console.error('Website Error:', e.error);
     // Future: Send error reports to monitoring service
 });
 
 // Performance monitoring
-window.addEventListener('load', function() {
+window.addEventListener('load', function () {
     const loadTime = performance.now();
     console.log('Website loaded in:', Math.round(loadTime), 'ms');
-    
+
     // Track loading performance
     trackEvent('page_load', {
         load_time: Math.round(loadTime),

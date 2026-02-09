@@ -5,7 +5,8 @@
  */
 
 // 🔴 IMPORTANTE: Reemplazar con tu URL de Apps Script deployment
-const SCRIPT_URL = 'TU_SCRIPT_URL_AQUI';
+// Ejemplo: 'https://script.google.com/macros/s/AKfycbx.../exec'
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx52WXG_TEBl7OQfb1B7njCla-dCF4kkU38PvqXhybV0X_S2dCLgIWpERvlvKp60L8N/exec';
 
 let servicioActual = null;
 let servicios = [];
@@ -18,6 +19,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('fecha').value = hoy;
 
     await cargarServicios();
+
+    // Auto-seleccionar servicio si viene desde servicios.html
+    autoSeleccionarServicio();
+
     setupEventListeners();
 });
 
@@ -25,6 +30,13 @@ document.addEventListener('DOMContentLoaded', async () => {
  * Cargar servicios desde backend
  */
 async function cargarServicios() {
+    // Verificar si la URL está configurada
+    if (SCRIPT_URL === 'TU_SCRIPT_URL_AQUI') {
+        console.warn('⚠️ SCRIPT_URL no configurada. Usando datos de ejemplo.');
+        cargarServiciosDemo();
+        return;
+    }
+
     try {
         const response = await fetch(`${SCRIPT_URL}?action=getInventario`);
         const data = await response.json();
@@ -46,6 +58,54 @@ async function cargarServicios() {
     } catch (e) {
         console.error('Error cargando servicios:', e);
         mostrarError('No se pudieron cargar los servicios. Intente nuevamente.');
+    }
+}
+
+/**
+ * Cargar servicios de ejemplo (modo demo)
+ */
+function cargarServiciosDemo() {
+    servicios = [
+        { id: 'SRV-001', nombre: 'Manicura Limpieza', precio: 25000, duracion_base_minutos: 30 },
+        { id: 'SRV-002', nombre: 'Manicura Semipermanente - Un Tono', precio: 50000, duracion_base_minutos: 75 },
+        { id: 'SRV-003', nombre: 'Pedicura Estética Semipermanente', precio: 50000, duracion_base_minutos: 75 },
+        { id: 'SRV-004', nombre: 'Polygel Esculpido + Semi', precio: 120000, duracion_base_minutos: 120 }
+    ];
+
+    const select = document.getElementById('servicio');
+    select.innerHTML = '<option value="">-- Seleccione un servicio --</option>' +
+        servicios.map(s => `<option value="${s.id}">${s.nombre} - $${s.precio.toLocaleString()}</option>`).join('');
+
+    mostrarError('⚠️ Modo DEMO: Configura SCRIPT_URL para conectar con el backend real.');
+}
+
+/**
+ * Auto-seleccionar servicio si viene desde servicios.html
+ */
+function autoSeleccionarServicio() {
+    const selectedServiceData = sessionStorage.getItem('selectedService');
+    if (!selectedServiceData) return;
+
+    try {
+        const service = JSON.parse(selectedServiceData);
+        const serviceSelect = document.getElementById('servicio');
+
+        // Buscar opción que coincida con el nombre del servicio
+        for (let option of serviceSelect.options) {
+            if (option.text.includes(service.nombre)) {
+                option.selected = true;
+                // Disparar evento change para actualizar duración
+                serviceSelect.dispatchEvent(new Event('change'));
+                break;
+            }
+        }
+
+        // Limpiar sessionStorage
+        sessionStorage.removeItem('selectedService');
+
+        console.log('Servicio auto-seleccionado:', service.nombre);
+    } catch (e) {
+        console.error('Error al auto-seleccionar servicio:', e);
     }
 }
 
@@ -95,10 +155,16 @@ async function actualizarDuracion() {
 
     const requiereRetiro = document.getElementById('requiere-retiro').checked;
 
+    // Modo DEMO: calcular duración localmente
+    if (SCRIPT_URL === 'TU_SCRIPT_URL_AQUI') {
+        calcularDuracionDemo(servicioId, requiereRetiro);
+        return;
+    }
+
     try {
         const response = await fetch(SCRIPT_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify({
                 action: 'calcularDuracion',
                 servicio_id: servicioId,
@@ -119,18 +185,53 @@ async function actualizarDuracion() {
                 document.getElementById('requiere-retiro').checked = false;
             }
 
-            // Mostrar duración
+            // Actualizar UI
             document.getElementById('duracion-display').textContent = data.duracionTotal;
             document.getElementById('duracion-info').style.display = 'block';
 
             actualizarHoraFin();
         } else {
-            mostrarError('Error al calcular duración: ' + data.error);
+            mostrarError('Error al calcular duración');
         }
     } catch (e) {
         console.error('Error calculando duración:', e);
         mostrarError('Error de conexión al calcular duración');
     }
+}
+
+/**
+ * Calcular duración en modo demo
+ */
+function calcularDuracionDemo(servicioId, requiereRetiro) {
+    const servicio = servicios.find(s => s.id === servicioId);
+
+    if (!servicio) {
+        mostrarError('Servicio no encontrado');
+        return;
+    }
+
+    const duracionBase = servicio.duracion_base_minutos || 60;
+    const duracionRetiro = requiereRetiro ? 30 : 0; // 30 min adicionales si requiere retiro
+    const duracionTotal = duracionBase + duracionRetiro;
+
+    servicioActual = {
+        success: true,
+        servicioId: servicio.id,
+        servicioNombre: servicio.nombre,
+        duracionBase: duracionBase,
+        duracionRetiro: duracionRetiro,
+        duracionTotal: duracionTotal,
+        requiereRetiroOpcional: true
+    };
+
+    // Mostrar checkbox de retiro (en demo siempre está disponible)
+    document.getElementById('retiro-group').style.display = 'block';
+
+    // Actualizar UI
+    document.getElementById('duracion-display').textContent = duracionTotal;
+    document.getElementById('duracion-info').style.display = 'block';
+
+    actualizarHoraFin();
 }
 
 /**
@@ -170,6 +271,15 @@ async function crearReserva() {
     ocultarAlerta();
 
     const formData = new FormData(document.getElementById('reserva-form'));
+
+    // Modo DEMO: simular creación de cita
+    if (SCRIPT_URL === 'TU_SCRIPT_URL_AQUI') {
+        setTimeout(() => {
+            crearReservaDemo(formData);
+        }, 1000); // Simular delay de red
+        return;
+    }
+
     const data = {
         action: 'crearCita',
         servicio_id: formData.get('servicio_id'),
@@ -185,7 +295,7 @@ async function crearReserva() {
     try {
         const response = await fetch(SCRIPT_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify(data)
         });
 
@@ -203,6 +313,33 @@ async function crearReserva() {
         document.getElementById('loading').classList.remove('active');
         document.getElementById('submit-btn').disabled = false;
     }
+}
+
+/**
+ * Crear reserva en modo demo
+ */
+function crearReservaDemo(formData) {
+    const citaId = 'DEMO-' + Date.now();
+    const horaInicio = formData.get('hora_inicio');
+    const [h, m] = horaInicio.split(':');
+    const inicio = new Date();
+    inicio.setHours(parseInt(h), parseInt(m));
+    const fin = new Date(inicio.getTime() + (servicioActual.duracionTotal * 60000));
+    const horaFin = fin.getHours().toString().padStart(2, '0') + ':' + fin.getMinutes().toString().padStart(2, '0');
+
+    const result = {
+        success: true,
+        citaId: citaId,
+        duracion: servicioActual.duracionTotal,
+        horaFin: horaFin,
+        whatsappLink: null,
+        message: 'Cita creada en modo DEMO (no se guardó en base de datos)'
+    };
+
+    mostrarExito(result);
+
+    document.getElementById('loading').classList.remove('active');
+    document.getElementById('submit-btn').disabled = false;
 }
 
 /**

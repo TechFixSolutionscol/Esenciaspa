@@ -88,39 +88,66 @@ function buscarOCrearCliente(clienteData) {
     const data = clientesSheet.getDataRange().getValues();
     const headers = data[0];
     
-    const telefonoCol = headers.indexOf('telefono');
-    const emailCol = headers.indexOf('email');
-    const idCol = headers.indexOf('id');
+    // Detección robusta de columnas
+    const headersRaw = headers.map(h => String(h).trim().toLowerCase());
+    const findCol = (aliases) => headersRaw.findIndex(h => aliases.some(a => h.includes(a)));
+
+    let telefonoCol = findCol(['telefono', 'teléfono', 'celular', 'whatsapp']);
+    if (telefonoCol === -1) telefonoCol = 2; // Fallback
+
+    let emailCol = findCol(['email', 'correo']); // Puede ser -1
+
+    let idCol = findCol(['id', 'codigo', 'código', 'documento']); 
+    if (idCol === -1) idCol = 0; // Fallback
     
     // Buscar por teléfono o email
     for (let i = 1; i < data.length; i++) {
-      const telefono = data[i][telefonoCol];
-      const email = data[i][emailCol];
+        const telefono = String(data[i][telefonoCol] || '').trim().replace(/\D/g, ''); // Limpiar teléfono
+        const email = String(data[i][emailCol] || '').trim().toLowerCase();
+        
+        const searchTel = String(clienteData.telefono || '').trim().replace(/\D/g, '');
+        const searchEmail = String(clienteData.email || '').trim().toLowerCase();
       
-      if (telefono === clienteData.telefono || (clienteData.email && email === clienteData.email)) {
-        // Cliente encontrado
-        return {
-          success: true,
-          clienteId: data[i][idCol],
-          esNuevo: false
-        };
-      }
+        // Comparación laxa de teléfono (si contiene al menos 7 dígitos coincidentes)
+        const telMatch = searchTel && telefono && (telefono.includes(searchTel) || searchTel.includes(telefono));
+        const emailMatch = emailCol !== -1 && searchEmail && email === searchEmail;
+      
+        if (telMatch || emailMatch) {
+            return {
+                success: true,
+                clienteId: data[i][idCol],
+                esNuevo: false
+            };
+        }
     }
     
-    // Cliente no existe, crear nuevo
-    const nuevoId = 'CLI-' + new Date().getTime();
+    // Cliente no existe, crear nuevo usando ID Estandarizado
+    // Intentamos usar la función global si existe, si no, generamos uno local compatible
+    let nuevoId;
+    try {
+        nuevoId = generateUniqueAppId(); 
+    } catch(e) {
+        nuevoId = 'id-' + (new Date().getTime().toString(36) + Math.random().toString(36).substring(2, 9)).toUpperCase();
+    }
     
-    clientesSheet.appendRow([
-      nuevoId,
-      clienteData.nombre,
-      clienteData.telefono,
-      clienteData.email || '',
-      '', // fecha_cumpleanos
-      '', // observaciones
-      new Date(), // fecha_registro
-      0, // total_servicios
-      null // ultima_visita
-    ]);
+    // Construir fila para nuevo cliente respetando columnas
+    const newRow = new Array(headers.length).fill('');
+    
+    // Indices adicionales para completar
+    let nombreCol = findCol(['nombre', 'cliente']);
+    if (nombreCol === -1) nombreCol = 1;
+
+    // Asignar valores
+    newRow[idCol] = nuevoId;
+    newRow[nombreCol] = clienteData.nombre;
+    newRow[telefonoCol] = clienteData.telefono;
+    if (emailCol !== -1) newRow[emailCol] = clienteData.email || '';
+    
+    // Llenar fecha registro si existe columna 'fecha' o 'registro'
+    let fechaRegCol = findCol(['fecha', 'registro', 'created']);
+    if (fechaRegCol !== -1) newRow[fechaRegCol] = new Date();
+
+    clientesSheet.appendRow(newRow);
     
     Logger.log(`✅ Cliente creado: ${nuevoId}`);
     
@@ -234,7 +261,20 @@ function crearCita(citaData) {
     
     Logger.log(`✅ Cita creada exitosamente: ${citaId}`);
     
-    // 6. Generar link de WhatsApp
+    // 6. Crear cotización automática (FASE 3)
+    const cotizacionResult = crearCotizacionAutomatica({
+      cita_id: citaId,
+      cliente_id: clienteId,
+      servicio_id: citaData.servicio_id
+    });
+    
+    if (cotizacionResult.success) {
+      Logger.log(`✅ Cotización creada automáticamente: ${cotizacionResult.cotizacionId}`);
+    } else {
+      Logger.log(`⚠️ No se pudo crear cotización: ${cotizacionResult.message || cotizacionResult.error}`);
+    }
+    
+    // 7. Generar link de WhatsApp
     const whatsappLink = generarNotificacionWhatsApp(
       citaData.cliente_telefono,
       citaData.cliente_nombre,
@@ -254,7 +294,9 @@ function crearCita(citaData) {
       duracion: duracion.duracionTotal,
       horaFin: Utilities.formatDate(horaFin, 'America/Bogota', 'HH:mm'),
       whatsappLink: whatsappLink,
-      message: 'Cita creada exitosamente'
+      cotizacionId: cotizacionResult.success ? cotizacionResult.cotizacionId : null,
+      cotizacionTotal: cotizacionResult.success ? cotizacionResult.total : null,
+      message: 'Cita y cotización creadas exitosamente'
     };
     
   } catch (e) {
