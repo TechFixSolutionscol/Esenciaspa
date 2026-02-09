@@ -1,10 +1,11 @@
 ﻿<!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tienda - Línea Siloé | Esencia Spa</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
     <style>
         body {
             background-image: url('assets/images/background.png') !important;
@@ -456,6 +457,7 @@
                 transform: translateX(-400px);
                 opacity: 0;
             }
+
             to {
                 transform: translateX(0);
                 opacity: 1;
@@ -534,17 +536,19 @@
         }
     </style>
 </head>
+
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <a href="index.html" class="nav-logo">
+            <a href="../index.html" class="nav-logo">
                 <img src="assets/images/icon.png" alt="Esencia Spa Logo" class="nav-logo-img">
                 <span>esencia spa</span>
             </a>
             <ul class="nav-menu">
-                <li><a href="index.html">Inicio</a></li>
+                <li><a href="../index.html">Inicio</a></li>
                 <li><a href="servicios.html">Servicios Spa</a></li>
-                <li class="cart-link"><a href="#" onclick="toggleCart(event)">🛒 Carrito <span id="cart-count" class="cart-badge">0</span></a></li>
+                <li class="cart-link"><a href="#" onclick="toggleCart(event)">🛒 Carrito <span id="cart-count"
+                            class="cart-badge">0</span></a></li>
             </ul>
         </div>
     </nav>
@@ -565,10 +569,13 @@
                         <div class="product-info">
                             <h3>Aceite Vital</h3>
                             <p class="product-size">20 ml | 100% artesanal</p>
-                            <p class="product-description">Aceites puros de origen natural. Regenerador, hidratante y reparador cutáneo.</p>
+                            <p class="product-description">Aceites puros de origen natural. Regenerador, hidratante y
+                                reparador cutáneo.</p>
                             <div class="product-footer">
                                 <span class="product-price">$20.000</span>
-                                <button class="add-to-cart-btn" onclick="addToCart({id: 1, name: 'Aceite Vital 20ml', price: 20000, image: 'assets/images/aceitevital.jpg'})">+ Agregar</button>
+                                <button class="add-to-cart-btn"
+                                    onclick="addToCart({id: 1, name: 'Aceite Vital 20ml', price: 20000, image: 'assets/images/aceitevital.jpg'})">+
+                                    Agregar</button>
                             </div>
                         </div>
                     </div>
@@ -580,10 +587,13 @@
                         <div class="product-info">
                             <h3>MediVital</h3>
                             <p class="product-size">30 ml | Solución tópica</p>
-                            <p class="product-description">Solución ungueal para el tratamiento de infecciones por hongos en las uñas.</p>
+                            <p class="product-description">Solución ungueal para el tratamiento de infecciones por
+                                hongos en las uñas.</p>
                             <div class="product-footer">
                                 <span class="product-price">$35.000</span>
-                                <button class="add-to-cart-btn" onclick="addToCart({id: 2, name: 'MediVital 30ml', price: 35000, image: 'assets/images/medivital.jpg'})">+ Agregar</button>
+                                <button class="add-to-cart-btn"
+                                    onclick="addToCart({id: 2, name: 'MediVital 30ml', price: 35000, image: 'assets/images/medivital.jpg'})">+
+                                    Agregar</button>
                             </div>
                         </div>
                     </div>
@@ -595,10 +605,13 @@
                         <div class="product-info">
                             <h3>FungiVital Crema</h3>
                             <p class="product-size">30 gr | Crema</p>
-                            <p class="product-description">Con aceites puros y extractos naturales. Refrescante, reparadora e hidratante para los pies.</p>
+                            <p class="product-description">Con aceites puros y extractos naturales. Refrescante,
+                                reparadora e hidratante para los pies.</p>
                             <div class="product-footer">
                                 <span class="product-price">$25.000</span>
-                                <button class="add-to-cart-btn" onclick="addToCart({id: 3, name: 'FungiVital Crema 30gr', price: 25000, image: 'assets/images/crema.jpg'})">+ Agregar</button>
+                                <button class="add-to-cart-btn"
+                                    onclick="addToCart({id: 3, name: 'FungiVital Crema 30gr', price: 25000, image: 'assets/images/crema.jpg'})">+
+                                    Agregar</button>
                             </div>
                         </div>
                     </div>
@@ -611,10 +624,13 @@
                         <div class="product-info">
                             <h3>Kit 1</h3>
                             <p class="product-size">Aceite Vital + MediVital</p>
-                            <p class="product-description">Tratamiento completo para infecciones causadas por hongos en las uñas.</p>
+                            <p class="product-description">Tratamiento completo para infecciones causadas por hongos en
+                                las uñas.</p>
                             <div class="product-footer">
                                 <span class="product-price">$50.000</span>
-                                <button class="add-to-cart-btn" onclick="addToCart({id: 4, name: 'Kit 1 (Aceite + MediVital)', price: 50000, image: 'assets/images/kit.jpg'})">+ Agregar</button>
+                                <button class="add-to-cart-btn"
+                                    onclick="addToCart({id: 4, name: 'Kit 1 (Aceite + MediVital)', price: 50000, image: 'assets/images/kit.jpg'})">+
+                                    Agregar</button>
                             </div>
                         </div>
                     </div>
@@ -627,10 +643,13 @@
                         <div class="product-info">
                             <h3>Kit 2</h3>
                             <p class="product-size">Aceite Vital + MediVital + FungiVital</p>
-                            <p class="product-description">Kit completo para el tratamiento integral de hongos en uñas.</p>
+                            <p class="product-description">Kit completo para el tratamiento integral de hongos en uñas.
+                            </p>
                             <div class="product-footer">
                                 <span class="product-price">$70.000</span>
-                                <button class="add-to-cart-btn" onclick="addToCart({id: 5, name: 'Kit 2 (Aceite + MediVital + FungiVital)', price: 70000, image: 'assets/images/kit2.jpg'})">+ Agregar</button>
+                                <button class="add-to-cart-btn"
+                                    onclick="addToCart({id: 5, name: 'Kit 2 (Aceite + MediVital + FungiVital)', price: 70000, image: 'assets/images/kit2.jpg'})">+
+                                    Agregar</button>
                             </div>
                         </div>
                     </div>
@@ -646,7 +665,8 @@
                             </div>
                         </div>
                         <div class="product-info">
-                            <p class="product-description">Consulta nuestras promociones por cantidad. Al por mayor tienes ventajas exclusivas.</p>
+                            <p class="product-description">Consulta nuestras promociones por cantidad. Al por mayor
+                                tienes ventajas exclusivas.</p>
                         </div>
                     </div>
                 </div>
@@ -657,7 +677,7 @@
                     <h2>Tu Carrito</h2>
                     <button class="close-cart" onclick="toggleCart()">✕</button>
                 </div>
-                
+
                 <div class="cart-items-container" id="cart-items-list">
                     <div class="empty-cart">
                         <p>Tu carrito está vacío</p>
@@ -681,8 +701,10 @@
                         </div>
                     </div>
 
-                    <button class="checkout-btn" id="checkout-btn" onclick="proceedToCheckout()">Proceder al Pago</button>
-                    <button class="clear-cart-btn" id="clear-btn" onclick="clearCart()" style="display: none;">Limpiar Carrito</button>
+                    <button class="checkout-btn" id="checkout-btn" onclick="proceedToCheckout()">Proceder al
+                        Pago</button>
+                    <button class="clear-cart-btn" id="clear-btn" onclick="clearCart()" style="display: none;">Limpiar
+                        Carrito</button>
                 </div>
             </aside>
         </div>
@@ -707,7 +729,8 @@
     </div>
 
     <div class="whatsapp-float" onclick="openWhatsApp()">
-        <img src="assets/images/whatsapp_icon.png" alt="WhatsApp, botón flotante para contactar al spa por mensaje instantáneo" class="whatsapp-icon">
+        <img src="assets/images/whatsapp_icon.png"
+            alt="WhatsApp, botón flotante para contactar al spa por mensaje instantáneo" class="whatsapp-icon">
     </div>
 
     <script>
@@ -715,7 +738,7 @@
         const WHATSAPP_PHONE = '+573023946941';
         let cart = [];
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             loadCart();
             updateCartUI();
         });
@@ -732,21 +755,21 @@
 
         function addToCart(product) {
             const existing = cart.find(item => item.id === product.id);
-            
+
             if (existing) {
                 existing.quantity += 1;
             } else {
                 product.quantity = 1;
                 cart.push(product);
             }
-            
+
             saveCart();
             showNotification(product.name + ' agregado al carrito');
         }
 
         function updateQuantity(productId, newQuantity) {
             const item = cart.find(item => item.id === productId);
-            
+
             if (item) {
                 if (newQuantity > 0) {
                     item.quantity = newQuantity;
@@ -798,7 +821,7 @@
 
             const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
-            
+
             let discount = 0;
             let discountPercent = 0;
 
@@ -812,7 +835,7 @@
             const total = subtotal - discount;
 
             subtotalEl.textContent = '\$' + subtotal.toLocaleString('es-CO');
-            
+
             if (discountPercent > 0) {
                 discountEl.textContent = '-\$' + discount.toLocaleString('es-CO') + ' (' + discountPercent + '%)';
                 discountRow.style.display = 'flex';
@@ -833,7 +856,7 @@
 
             const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
             const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            
+
             let discountPercent = 0;
             if (totalQuantity >= 10) {
                 discountPercent = 15;
@@ -846,7 +869,7 @@
 
             let message = '🛍️ *PEDIDO DE TIENDA LÍNEA SILOÉ*\n\n';
             message += '*Productos:*\n';
-            
+
             cart.forEach(item => {
                 message += '• ' + item.name + '\n';
                 message += '  Cantidad: ' + item.quantity + ' × \$' + item.price.toLocaleString('es-CO') + '\n';
@@ -855,18 +878,18 @@
 
             message += '*Resumen:*\n';
             message += 'Subtotal: \$' + subtotal.toLocaleString('es-CO') + '\n';
-            
+
             if (discountPercent > 0) {
                 message += 'Descuento (' + discountPercent + '%): -\$' + discount.toLocaleString('es-CO') + '\n';
             }
-            
+
             message += '*TOTAL: \$' + total.toLocaleString('es-CO') + '*\n\n';
             message += '¿Podrías confirmar este pedido y el método de pago?';
 
             const encodedMessage = encodeURIComponent(message);
             const whatsappUrl = 'https://wa.me/' + WHATSAPP_PHONE + '?text=' + encodedMessage;
             window.open(whatsappUrl, '_blank');
-            
+
             // Limpiar carrito después de enviar a WhatsApp
             showNotification('Pedido enviado a WhatsApp. Carrito borrado.');
             cart = [];
@@ -898,4 +921,5 @@
         }
     </script>
 </body>
+
 </html>

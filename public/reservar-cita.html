@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservar Cita - Esencia Spa</title>
+    <link rel="icon" href="assets/images/icon.png" type="image/png">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .reserva-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #ff69b4;
+            outline: none;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        .info-box {
+            background: #f0f8ff;
+            border-left: 4px solid #4285f4;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .info-box strong {
+            color: #4285f4;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, #ff69b4, #ff1493);
+            color: white;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
+        }
+
+        .primary-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #ff69b4;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="assets/images/icon.png" alt="Esencia Spa">
+                <span>Esencia Spa</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="../index.html">Inicio</a></li>
+                <li><a href="servicios.html">Servicios</a></li>
+                <li><a href="tienda.html">Tienda</a></li>
+                <li><a href="reservar-cita.html" class="active">Reservar Cita</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="reserva-container">
+            <h1 style="text-align: center; color: #ff69b4; margin-bottom: 30px;">
+                📅 Reservar Cita
+            </h1>
+
+            <form id="reserva-form">
+                <!-- Servicio -->
+                <div class="form-group">
+                    <label for="servicio">Seleccione Servicio *</label>
+                    <select id="servicio" name="servicio_id" required>
+                        <option value="">-- Cargando servicios --</option>
+                    </select>
+                </div>
+
+                <!-- Checkbox de retiro (se muestra solo si aplica) -->
+                <div id="retiro-group" class="form-group" style="display: none;">
+                    <label class="checkbox-group">
+                        <input type="checkbox" id="requiere-retiro" name="requiere_retiro">
+                        <span>¿Requiere retiro de sistema anterior? (+30 min)</span>
+                    </label>
+                </div>
+
+                <!-- Duración calculada -->
+                <div id="duracion-info" class="info-box" style="display: none;">
+                    <strong>⏱️ Duración estimada:</strong> <span id="duracion-display">0</span> minutos
+                    <br>
+                    <small>Hora fin aproximada: <span id="hora-fin-display">--:--</span></small>
+                </div>
+
+                <!-- Fecha y hora -->
+                <div class="form-group">
+                    <label for="fecha">Fecha *</label>
+                    <input type="date" id="fecha" name="fecha" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="hora">Hora de inicio *</label>
+                    <input type="time" id="hora" name="hora_inicio" required>
+                </div>
+
+                <!-- Datos del cliente -->
+                <div class="form-group">
+                    <label for="nombre">Nombre completo *</label>
+                    <input type="text" id="nombre" name="cliente_nombre" required placeholder="Ej: María González">
+                </div>
+
+                <div class="form-group">
+                    <label for="telefono">Teléfono (WhatsApp) *</label>
+                    <input type="tel" id="telefono" name="cliente_telefono" required placeholder="Ej: 3001234567"
+                        pattern="[0-9]{10}">
+                    <small style="color: #666;">Formato: 10 dígitos sin espacios</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email (opcional)</label>
+                    <input type="email" id="email" name="cliente_email" placeholder="tu@email.com">
+                    <small style="color: #666;">Recibirás confirmación por correo si lo proporcionas</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="observaciones">Observaciones (opcional)</label>
+                    <textarea id="observaciones" name="observaciones" rows="3"
+                        placeholder="Alguna solicitud especial o preferencia..."></textarea>
+                </div>
+
+                <!-- Loading -->
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Procesando tu reserva...</p>
+                </div>
+
+                <!-- Alertas -->
+                <div class="alert" id="alert"></div>
+
+                <!-- Botón -->
+                <button type="submit" class="btn primary-btn" id="submit-btn">
+                    ✨ Reservar Cita
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Esencia Spa. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="js/reservar_cita.js"></script>
+</body>
+
+</html>

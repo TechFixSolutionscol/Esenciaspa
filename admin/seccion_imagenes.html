@@ -1,0 +1,216 @@
+<!-- 
+  SECCIÓN GESTIÓN DE IMAGENES
+  Agregar esta sección al archivo admin/dashboard.html
+  después de la sección de Productos
+-->
+
+<section id="imagenesSection" class="section" style="display: none;">
+    <h2>📷 Gestión de Imágenes</h2>
+
+    <!-- Productos sin imagen -->
+    <div class="card">
+        <div class="card-header">
+            <h3>⚠️ Productos/Servicios sin Imagen</h3>
+            <button class="btn btn-sm btn-secondary" onclick="cargarProductosSinImagen()">🔄 Actualizar</button>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Tipo</th>
+                        <th>Categoría</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="productos-sin-imagen-tbody">
+                    <tr>
+                        <td colspan="5" class="text-center">Cargando...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Catálogo con imágenes -->
+    <div class="card" style="margin-top: 20px;">
+        <div class="card-header">
+            <h3>🖼️ Catálogo de Imágenes</h3>
+            <button class="btn btn-sm btn-secondary" onclick="cargarCatalogoConImagenes()">🔄 Actualizar</button>
+        </div>
+        <div class="card-body">
+            <div id="catalogo-imagenes" class="catalogo-grid">
+                <p class="text-center">Cargando...</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal para subir imagen -->
+<div id="modal-subir-imagen" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📷 Subir Imagen</h3>
+            <span class="close" onclick="cerrarModalSubirImagen()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p><strong>Producto:</strong> <span id="modal-producto-nombre"></span></p>
+            <input type="hidden" id="modal-producto-id">
+
+            <div class="form-group">
+                <label for="imagen-file">Seleccionar Imagen *</label>
+                <input type="file" id="imagen-file" accept="image/*" required>
+                <small style="color: #666;">Formatos: JPG, PNG, WebP. Máximo 5MB.</small>
+            </div>
+
+            <div class="preview-container">
+                <img id="preview-imagen"
+                    style="display: none; max-width: 100%; max-height: 300px; border-radius: 8px; margin-top: 15px;">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="cerrarModalSubirImagen()">Cancelar</button>
+            <button class="btn btn-primary" id="btn-confirmar-subir" onclick="subirImagen()">📤 Subir</button>
+        </div>
+    </div>
+</div>
+
+<!-- Estilos para la sección -->
+<style>
+    .catalogo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .imagen-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: transform 0.3s, box-shadow 0.3s;
+        background: white;
+    }
+
+    .imagen-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .imagen-card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .imagen-info {
+        padding: 15px;
+    }
+
+    .imagen-info h4 {
+        margin: 0 0 8px 0;
+        font-size: 16px;
+        color: #333;
+    }
+
+    .imagen-info p {
+        margin: 0 0 8px 0;
+        font-size: 14px;
+        color: #666;
+    }
+
+    .imagen-actions {
+        padding: 0 15px 15px 15px;
+        display: flex;
+        gap: 10px;
+    }
+
+    .imagen-actions .btn {
+        flex: 1;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .badge-info {
+        background: #e3f2fd;
+        color: #1976d2;
+    }
+
+    .badge-warning {
+        background: #fff3e0;
+        color: #f57c00;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background-color: white;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+        padding: 20px;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-header h3 {
+        margin: 0;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .modal-footer {
+        padding: 20px;
+        border-top: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .close {
+        font-size: 28px;
+        font-weight: bold;
+        color: #999;
+        cursor: pointer;
+    }
+
+    .close:hover {
+        color: #333;
+    }
+</style>
+
+<!-- 
+  AGREGAR AL MENÚ DE NAVEGACIÓN:
+  <li><a href="#" onclick="showSection('imagenesSection'); cargarGestionImagenes();">📷 Imágenes</a></li>
+-->
+
+<!-- 
+  AGREGAR AL FINAL DEL HTML (antes del cierre de </body>):
+  <script src="js/gestion_imagenes.js"></script>
+-->
