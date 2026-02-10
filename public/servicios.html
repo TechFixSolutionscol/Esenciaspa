@@ -5,7 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Servicios - Esencia Spa</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/landing.css">
     <style>
         body {
             background-image: url('assets/images/backgroundservice.png') !important;
@@ -18,143 +23,198 @@
 </head>
 
 <body>
-    <nav class="navbar">
+    <!-- Particles Background -->
+    <div class="particles-container" id="particles"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar scrolled" id="navbar">
         <div class="nav-container">
             <a href="../index.html" class="nav-logo">
                 <img src="assets/images/icon.png" alt="Esencia Spa Logo" class="nav-logo-img">
-                <span>esencia spa</span>
+                <span>Esencia Spa</span>
             </a>
-            <ul class="nav-menu">
-                <li><a href="../index.html">Inicio</a></li>
-                <li><a href="tienda.html">Productos Cosméticos</a></li>
-                <li><a href="../admin/index.html">Login</a></li>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../index.html" class="nav-link">Inicio</a></li>
+                <li><a href="#" class="nav-link active">Servicios</a></li>
+                <li><a href="tienda.html" class="nav-link">Línea Siloé</a></li>
+                <li><a href="../admin/index.html" class="nav-link">Login</a></li>
             </ul>
+            <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </nav>
 
-    <div class="container">
-        <div class="page-header">
-            <h2>Nuestros Servicios</h2>
-            <p>Descubre nuestros tratamientos especializados para el cuidado de manos y pies</p>
-        </div>
+    <!-- Services Page Content -->
+    <div class="services-page-container">
+        <!-- Hero Section for Services -->
+        <section class="services-hero">
+            <div class="section-container">
+                <div class="section-label">
+                    <span>💅</span>
+                    <span>Tratamientos Profesionales</span>
+                </div>
+                <h1 class="page-title">Nuestros Servicios</h1>
+                <p class="page-subtitle">Descubre nuestros tratamientos especializados para el cuidado de manos y pies
+                </p>
+            </div>
+        </section>
 
         <!-- Manicura Estética -->
         <section class="services-section">
-            <h3 class="section-title">✨ Manicura Estética ✨</h3>
-            <div class="services-grid">
-                <div class="service-card">
-                    <img src="assets/images/limpieza.jpg" alt="Servicio Esencia Spa" class="service-img">
-                    <h4>Manicura Limpieza</h4>
-                    <p class="service-duration">Duración: 30 min</p>
-                    <p>Mantén tus uñas y cutículas impecables con un acabado natural.</p>
-                    <div class="price">$25.000</div>
-                    <button class="service-btn">Reservar Cita</button>
-                </div>
+            <div class="section-container">
+                <h2 class="section-title-services">✨ Manicura Estética ✨</h2>
+                <div class="services-grid">
+                    <div class="service-card glass-card">
+                        <img src="assets/images/limpieza.jpg" alt="Manicura Limpieza" class="service-img">
+                        <div class="service-content">
+                            <h3>Manicura Limpieza</h3>
+                            <p class="service-duration">⏱️ 30 min</p>
+                            <p class="service-description">Mantén tus uñas y cutículas impecables con un acabado
+                                natural.</p>
+                            <div class="price">$25.000</div>
+                            <button class="service-btn">Reservar Cita</button>
+                        </div>
+                    </div>
 
-                <div class="service-card">
-                    <img src="assets/images/semiman.jpg" alt="Servicio Esencia Spa" class="service-img">
-                    <h4>Manicura Semi-Hombre</h4>
-                    <p class="service-duration">Duración: 50 min</p>
-                    <p>Manos pulcras con un acabado discreto y profesional.</p>
-                    <div class="price">$35.000</div>
-                    <button class="service-btn">Reservar Cita</button>
-                </div>
+                    <div class="service-card glass-card">
+                        <img src="assets/images/semiman.jpg" alt="Manicura Semi-Hombre" class="service-img">
+                        <div class="service-content">
+                            <h3>Manicura Semi-Hombre</h3>
+                            <p class="service-duration">⏱️ 50 min</p>
+                            <p class="service-description">Manos pulcras con un acabado discreto y profesional.</p>
+                            <div class="price">$35.000</div>
+                            <button class="service-btn">Reservar Cita</button>
+                        </div>
+                    </div>
 
-                <div class="service-card">
-                    <img src="assets/images/semipermanente.jpg" alt="Servicio Esencia Spa" class="service-img">
-                    <h4>Manicura Semipermanente - Un Tono</h4>
-                    <p class="service-duration">Duración: 75 min</p>
-                    <p>Color vibrante y brillo impecable que dura semanas sin preocupaciones.</p>
-                    <div class="price">$50.000</div>
-                    <button class="service-btn">Reservar Cita</button>
-                </div>
+                    <div class="service-card glass-card">
+                        <img src="assets/images/semipermanente.jpg" alt="Manicura Semipermanente" class="service-img">
+                        <div class="service-content">
+                            <h3>Manicura Semipermanente - Un Tono</h3>
+                            <p class="service-duration">⏱️ 75 min</p>
+                            <p class="service-description">Color vibrante y brillo impecable que dura semanas sin
+                                preocupaciones.</p>
+                            <div class="price">$50.000</div>
+                            <button class="service-btn">Reservar Cita</button>
+                        </div>
+                    </div>
 
-                <div class="service-card">
-                    <img src="assets/images/semipermanente.jpg" alt="Servicio Esencia Spa" class="service-img">
-                    <h4>Manicura Semipermanente - Con Diseño</h4>
-                    <p class="service-duration">Duración: 90 min</p>
-                    <p>Diseños personalizados con colores vibrantes que duran semanas.</p>
-                    <div class="price">$60.000</div>
-                    <button class="service-btn">Reservar Cita</button>
+                    <div class="service-card glass-card">
+                        <img src="assets/images/semipermanente.jpg" alt="Manicura con Diseño" class="service-img">
+                        <div class="service-content">
+                            <h3>Manicura Semipermanente - Con Diseño</h3>
+                            <p class="service-duration">⏱️ 90 min</p>
+                            <p class="service-description">Diseños personalizados con colores vibrantes que duran
+                                semanas.</p>
+                            <div class="price">$60.000</div>
+                            <button class="service-btn">Reservar Cita</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- Gel y Polygel Manos -->
         <section class="services-section">
-            <h3 class="section-title">💎 Gel y Polygel (Manos) 💎</h3>
-            <div class="services-grid">
-                <div class="service-card">
-                    <img src="assets/images/rubber.jpg" alt="Servicio Esencia Spa" class="service-img">
-                    <h4>Forrado en Gel</h4>
-                    <p class="service-duration">Duración: 90-120 min</p>
-                    <p>Refuerza tu uña natural con una cubierta protectora de gel de larga duración.</p>
-                    <div class="price">$85.000</div>
-                    <button class="service-btn">Reservar Cita</button>
-                </div>
+            <div class="section-container">
+                <h2 class="section-title-services">💎 Gel y Polygel (Manos) 💎</h2>
+                <div class="services-grid">
+                    <div class="service-card glass-card">
+                        <img src="assets/images/rubber.jpg" alt="Forrado en Gel" class="service-img">
+                        <div class="service-content">
+                            <h3>Forrado en Gel</h3>
+                            <p class="service-duration">⏱️ 90-120 min</p>
+                            <p class="service-description">Refuerza tu uña natural con una cubierta protectora de gel de
+                                larga duración.</p>
+                            <div class="price">$85.000</div>
+                            <button class="service-btn">Reservar Cita</button>
+                        </div>
+                    </div>
 
-                <div class="service-card">
-                    <img src="assets/images/presson.jpg" alt="Servicio Esencia Spa" class="service-img">
-                    <h4>Press On + Semi</h4>
-                    <p class="service-duration">Duración: 120-150 min</p>
-                    <p>Manicura de alta durabilidad con acabado impecable y diseño personalizado.</p>
-                    <div class="price">$100.000</div>
-                    <button class="service-btn">Reservar Cita</button>
-                </div>
+                    <div class="service-card glass-card">
+                        <img src="assets/images/presson.jpg" alt="Press On + Semi" class="service-img">
+                        <div class="service-content">
+                            <h3>Press On + Semi</h3>
+                            <p class="service-duration">⏱️ 120-150 min</p>
+                            <p class="service-description">Manicura de alta durabilidad con acabado impecable y diseño
+                                personalizado.</p>
+                            <div class="price">$100.000</div>
+                            <button class="service-btn">Reservar Cita</button>
+                        </div>
+                    </div>
 
-                <div class="service-card">
-                    <img src="assets/images/polygel.jpg" alt="Servicio Esencia Spa" class="service-img">
-                    <h4>Polygel Esculpido (hasta #3) + Semi</h4>
-                    <p class="service-duration">Duración: 120-150 min</p>
-                    <p>Transforma tus uñas con longitud, fuerza y acabado semipermanente.</p>
-                    <div class="price">$120.000</div>
-                    <button class="service-btn">Reservar Cita</button>
-                </div>
+                    <div class="service-card glass-card">
+                        <img src="assets/images/polygel.jpg" alt="Polygel Esculpido" class="service-img">
+                        <div class="service-content">
+                            <h3>Polygel Esculpido (hasta #3) + Semi</h3>
+                            <p class="service-duration">⏱️ 120-150 min</p>
+                            <p class="service-description">Transforma tus uñas con longitud, fuerza y acabado
+                                semipermanente.</p>
+                            <div class="price">$120.000</div>
+                            <button class="service-btn">Reservar Cita</button>
+                        </div>
+                    </div>
 
-                <div class="service-card">
-                    <img src="assets/images/polygel.jpg" alt="Servicio Esencia Spa" class="service-img">
-                    <h4>Forrado en Polygel + Semi</h4>
-                    <p class="service-duration">Duración: 120-150 min</p>
-                    <p>Refuerza tu uña existente con polygel y acabado semipermanente.</p>
-                    <div class="price">$110.000</div>
-                    <button class="service-btn">Reservar Cita</button>
-                </div>
+                    <div class="service-card glass-card">
+                        <img src="assets/images/polygel.jpg" alt="Forrado en Polygel" class="service-img">
+                        <div class="service-content">
+                            <h3>Forrado en Polygel + Semi</h3>
+                            <p class="service-duration">⏱️ 120-150 min</p>
+                            <p class="service-description">Refuerza tu uña existente con polygel y acabado
+                                semipermanente.</p>
+                            <div class="price">$110.000</div>
+                            <button class="service-btn">Reservar Cita</button>
+                        </div>
+                    </div>
 
-                <div class="service-card">
-                    <img src="assets/images/polygel.jpg" alt="Servicio Esencia Spa" class="service-img">
-                    <h4>Retoque Polygel + Semi</h4>
-                    <p class="service-duration">Duración: 120-150 min</p>
-                    <p>Mantén tu manicura perfecta cada 20 días con un retoque profesional.</p>
-                    <div class="price">$100.000</div>
-                    <button class="service-btn">Reservar Cita</button>
+                    <div class="service-card glass-card">
+                        <img src="assets/images/polygel.jpg" alt="Retoque Polygel" class="service-img">
+                        <div class="service-content">
+                            <h3>Retoque Polygel + Semi</h3>
+                            <p class="service-duration">⏱️ 120-150 min</p>
+                            <p class="service-description">Mantén tu manicura perfecta cada 20 días con un retoque
+                                profesional.</p>
+                            <div class="price">$100.000</div>
+                            <button class="service-btn">Reservar Cita</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- Servicios Adicionales Manos -->
         <section class="services-section">
-            <h3 class="section-title">🔧 Servicios Adicionales (Manos) 🔧</h3>
-            <div class="additional-services">
-                <div class="additional-grid">
-                    <div class="additional-card">
-                        <h5>Retiro Semi / Rubber / Dipping</h5>
-                        <p class="additional-duration">15 min</p>
-                        <span class="additional-price">$15.000</span>
-                    </div>
-                    <div class="additional-card">
-                        <h5>Retiro Polygel / Press On</h5>
-                        <p class="additional-duration">25 min</p>
-                        <span class="additional-price">$20.000</span>
-                    </div>
-                    <div class="additional-card">
-                        <h5>Reparación Uña Polygel</h5>
-                        <p class="additional-duration">Por uña</p>
-                        <span class="additional-price">$10.000</span>
-                    </div>
-                    <div class="additional-card">
-                        <h5>Cambio de Color</h5>
-                        <p class="additional-duration">Incluido</p>
-                        <span class="additional-price">$35.000</span>
+            <div class="section-container">
+                <h2 class="section-title-services">🔧 Servicios Adicionales (Manos) 🔧</h2>
+                <div class="additional-services glass-card">
+                    <div class="additional-grid">
+                        <div class="additional-card">
+                            <div class="additional-icon">🔧</div>
+                            <h4>Retiro Semi / Rubber / Dipping</h4>
+                            <p class="additional-duration">⏱️ 15 min</p>
+                            <span class="additional-price">$15.000</span>
+                        </div>
+                        <div class="additional-card">
+                            <div class="additional-icon">💅</div>
+                            <h4>Retiro Polygel / Press On</h4>
+                            <p class="additional-duration">⏱️ 25 min</p>
+                            <span class="additional-price">$20.000</span>
+                        </div>
+                        <div class="additional-card">
+                            <div class="additional-icon">🩹</div>
+                            <h4>Reparación Uña Polygel</h4>
+                            <p class="additional-duration">Por uña</p>
+                            <span class="additional-price">$10.000</span>
+                        </div>
+                        <div class="additional-card">
+                            <div class="additional-icon">🎨</div>
+                            <h4>Cambio de Color</h4>
+                            <p class="additional-duration">Incluido</p>
+                            <span class="additional-price">$35.000</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -162,47 +222,60 @@
 
         <!-- Pedicura Estética -->
         <section class="services-section">
-            <h3 class="section-title">👣 Pedicura Estética 👣</h3>
-            <div class="services-grid">
-                <div class="service-card">
-                    <img src="assets/images/limpiezabasica.jpg" alt="Servicio Esencia Spa" class="service-img">
-                    <h4>Pedicura Estética - Solo Limpieza</h4>
-                    <p class="service-duration">Duración: 40 min</p>
-                    <p>Cuidado básico que refresca y mantiene tus pies pulcros y saludables.</p>
-                    <div class="price">$25.000</div>
-                    <button class="service-btn">Reservar Cita</button>
-                </div>
+            <div class="section-container">
+                <h2 class="section-title-services">👣 Pedicura Estética 👣</h2>
+                <div class="services-grid">
+                    <div class="service-card glass-card">
+                        <img src="assets/images/limpiezabasica.jpg" alt="Pedicura Estética" class="service-img">
+                        <div class="service-content">
+                            <h3>Pedicura Estética - Solo Limpieza</h3>
+                            <p class="service-duration">⏱️ 40 min</p>
+                            <p class="service-description">Cuidado básico que refresca y mantiene tus pies pulcros y
+                                saludables.</p>
+                            <div class="price">$25.000</div>
+                            <button class="service-btn">Reservar Cita</button>
+                        </div>
+                    </div>
 
-                <div class="service-card">
-                    <img src="assets/images/semipies.jpg" alt="Servicio Esencia Spa" class="service-img">
-                    <h4>Pedicura Estética Semipermanente</h4>
-                    <p class="service-duration">Duración: 75 min</p>
-                    <p>Color impecable y brillo duradero en tus pies por semanas.</p>
-                    <div class="price">$50.000</div>
-                    <button class="service-btn">Reservar Cita</button>
+                    <div class="service-card glass-card">
+                        <img src="assets/images/semipies.jpg" alt="Pedicura Semipermanente" class="service-img">
+                        <div class="service-content">
+                            <h3>Pedicura Estética Semipermanente</h3>
+                            <p class="service-duration">⏱️ 75 min</p>
+                            <p class="service-description">Color impecable y brillo duradero en tus pies por semanas.
+                            </p>
+                            <div class="price">$50.000</div>
+                            <button class="service-btn">Reservar Cita</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- Servicios Adicionales Pies -->
         <section class="services-section">
-            <h3 class="section-title">💧 Servicios Adicionales (Pies) 💧</h3>
-            <div class="additional-services">
-                <div class="additional-grid">
-                    <div class="additional-card">
-                        <h5>Pedi Spa</h5>
-                        <p class="additional-duration">20 min</p>
-                        <span class="additional-price">$30.000</span>
-                    </div>
-                    <div class="additional-card">
-                        <h5>Reparación Uña Polygel (Pie)</h5>
-                        <p class="additional-duration">10 min</p>
-                        <span class="additional-price">$10.000</span>
-                    </div>
-                    <div class="additional-card">
-                        <h5>Terapia Plantar (Callosidades)</h5>
-                        <p class="additional-duration">20 min</p>
-                        <span class="additional-price">$25.000</span>
+            <div class="section-container">
+                <h2 class="section-title-services">💧 Servicios Adicionales (Pies) 💧</h2>
+                <div class="additional-services glass-card">
+                    <div class="additional-grid">
+                        <div class="additional-card">
+                            <div class="additional-icon">💆</div>
+                            <h4>Pedi Spa</h4>
+                            <p class="additional-duration">⏱️ 20 min</p>
+                            <span class="additional-price">$30.000</span>
+                        </div>
+                        <div class="additional-card">
+                            <div class="additional-icon">🩹</div>
+                            <h4>Reparación Uña Polygel (Pie)</h4>
+                            <p class="additional-duration">⏱️ 10 min</p>
+                            <span class="additional-price">$10.000</span>
+                        </div>
+                        <div class="additional-card">
+                            <div class="additional-icon">🦶</div>
+                            <h4>Terapia Plantar (Callosidades)</h4>
+                            <p class="additional-duration">⏱️ 20 min</p>
+                            <span class="additional-price">$25.000</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -210,63 +283,85 @@
 
         <!-- Pedicura Clínica Preventiva y Quiropodias -->
         <section class="services-section">
-            <h3 class="section-title">🏥 Pedicura Clínica Preventiva y Quiropodias 🏥</h3>
-            <div class="services-grid">
-                <div class="service-card">
-                    <img src="assets/images/encarnada.jpg" alt="Servicio Esencia Spa" class="service-img">
-                    <h4>Onicocriptosis (Uña Encarnada)</h4>
-                    <p class="service-duration">Duración: 60 min</p>
-                    <p>Tratamiento especializado y alivio de uñas encarnadas con técnicas clínicas.</p>
-                    <div class="price">$80.000</div>
-                    <button class="service-btn">Reservar Cita</button>
-                </div>
+            <div class="section-container">
+                <h2 class="section-title-services">🏥 Pedicura Clínica Preventiva y Quiropodias 🏥</h2>
+                <div class="services-grid">
+                    <div class="service-card glass-card">
+                        <img src="assets/images/encarnada.jpg" alt="Onicocriptosis" class="service-img">
+                        <div class="service-content">
+                            <h3>Onicocriptosis (Uña Encarnada)</h3>
+                            <p class="service-duration">⏱️ 60 min</p>
+                            <p class="service-description">Tratamiento especializado y alivio de uñas encarnadas con
+                                técnicas clínicas.</p>
+                            <div class="price">$80.000</div>
+                            <button class="service-btn">Reservar Cita</button>
+                        </div>
+                    </div>
 
-                <div class="service-card">
-                    <img src="assets/images/oni.jpg" alt="Servicio Esencia Spa" class="service-img">
-                    <h4>Onicomadesis / Onicolisis</h4>
-                    <p class="service-duration">Duración: 60 min</p>
-                    <p>Tratamiento profesional para desprendimiento de uñas y patologías relacionadas.</p>
-                    <div class="price">$80.000</div>
-                    <button class="service-btn">Reservar Cita</button>
-                </div>
+                    <div class="service-card glass-card">
+                        <img src="assets/images/oni.jpg" alt="Onicomadesis" class="service-img">
+                        <div class="service-content">
+                            <h3>Onicomadesis / Onicolisis</h3>
+                            <p class="service-duration">⏱️ 60 min</p>
+                            <p class="service-description">Tratamiento profesional para desprendimiento de uñas y
+                                patologías relacionadas.</p>
+                            <div class="price">$80.000</div>
+                            <button class="service-btn">Reservar Cita</button>
+                        </div>
+                    </div>
 
-                <div class="service-card">
-                    <img src="assets/images/quiro.jpg" alt="Servicio Esencia Spa" class="service-img">
-                    <h4>Quiropodias (Onicomicosis, Distrofias)</h4>
-                    <p class="service-duration">Primera cita: Diagnóstico</p>
-                    <p>Tratamiento especializado para hongos y distrofias ungueales. Controles mensuales: $80.000</p>
-                    <div class="price">Consulta</div>
-                    <button class="service-btn">Valoración Gratuita</button>
+                    <div class="service-card glass-card">
+                        <img src="assets/images/quiro.jpg" alt="Quiropodias" class="service-img">
+                        <div class="service-content">
+                            <h3>Quiropodias (Onicomicosis, Distrofias)</h3>
+                            <p class="service-duration">📋 Primera cita: Diagnóstico</p>
+                            <p class="service-description">Tratamiento especializado para hongos y distrofias ungueales.
+                                Controles mensuales: $80.000</p>
+                            <div class="price">Consulta</div>
+                            <button class="service-btn service-btn-secondary">Valoración Gratuita</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <div class="promo-banner">
-            <h3>✨ ¡Beneficio Exclusivo! ✨</h3>
-            <p>En tu primera cita, obtén un <strong>10% de descuento</strong> en el servicio que elijas. ¡Es nuestra
-                forma de agradecer tu confianza en Esencia Spa!</p>
-        </div>
+        <!-- Promo Banner -->
+        <section class="promo-section">
+            <div class="section-container">
+                <div class="promo-banner glass-card">
+                    <div class="promo-icon">🎉</div>
+                    <h3>¡Beneficio Exclusivo!</h3>
+                    <p>En tu primera cita, obtén un <strong>10% de descuento</strong> en el servicio que elijas. ¡Es
+                        nuestra forma de agradecer tu confianza en Esencia Spa!</p>
+                </div>
+            </div>
+        </section>
 
-        <div class="location-info">
-            <h3>📍 Encuéntranos</h3>
-            <p>
-                <strong>Ubicación:</strong>
-                <a href="https://maps.app.goo.gl/eTgJxf2KYT6xfEhP7" target="_blank" rel="noopener">
-                    Itagüí, Villa Paula
-                </a>
-            </p>
-            <p><em>Para garantizar la calidad y la experiencia completa que ofrecemos, no realizamos servicios a
-                    domicilio.</em></p>
-        </div>
+        <!-- Location Info -->
+        <section class="location-section">
+            <div class="section-container">
+                <div class="location-info glass-card">
+                    <div class="location-icon">📍</div>
+                    <h3>Encuéntranos</h3>
+                    <p class="location-address">
+                        <strong>Ubicación:</strong>
+                        <a href="https://maps.app.goo.gl/eTgJxf2KYT6xfEhP7" target="_blank" rel="noopener">
+                            Itagüí, Villa Paula
+                        </a>
+                    </p>
+                    <p class="location-note"><em>Para garantizar la calidad y la experiencia completa que ofrecemos, no
+                            realizamos servicios a domicilio.</em></p>
+                </div>
+            </div>
+        </section>
     </div>
 
     <!-- Floating WhatsApp Button -->
     <div class="whatsapp-float" onclick="openWhatsApp()">
-        <img src="assets/images/whatsapp_icon.png"
-            alt="WhatsApp, botón flotante para contactar al spa por mensaje instantáneo" class="whatsapp-icon">
+        <img src="assets/images/whatsapp_icon.png" alt="WhatsApp" class="whatsapp-icon">
     </div>
 
-    <script src="js/script.js"></script>
+    <script src="js/landing.js"></script>
 </body>
 
 </html>

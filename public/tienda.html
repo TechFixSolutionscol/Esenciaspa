@@ -5,562 +5,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tienda - Línea Siloé | Esencia Spa</title>
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        body {
-            background-image: url('assets/images/background.png') !important;
-            background-size: cover !important;
-            background-position: center !important;
-            background-repeat: no-repeat !important;
-            background-attachment: fixed !important;
-        }
-
-        /* TIENDA ESTILOS */
-        .store-wrapper {
-            display: flex;
-            gap: 30px;
-            margin: 40px 0;
-            position: relative;
-        }
-
-        .store-section {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin: 30px 0;
-        }
-
-        .product-card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(216, 27, 96, 0.15);
-        }
-
-        .product-card.promo {
-            background: linear-gradient(135deg, #d81b60 0%, #8e24aa 100%);
-            color: white;
-        }
-
-        .product-card.promo .product-image {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 250px;
-        }
-
-        .product-image {
-            width: 100%;
-            height: 250px;
-            overflow: hidden;
-            background: #f5f5f5;
-            position: relative;
-        }
-
-        .product-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        .product-card:hover .product-image img {
-            transform: scale(1.05);
-        }
-
-        .product-image.featured {
-            background: linear-gradient(135deg, #f5f5f5 0%, #eeeeee 100%);
-        }
-
-        .badge {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: #d81b60;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            box-shadow: 0 2px 8px rgba(216, 27, 96, 0.3);
-        }
-
-        .promo-content {
-            text-align: center;
-            width: 100%;
-        }
-
-        .promo-content h3 {
-            font-size: 1.8rem;
-            margin: 0 0 20px 0;
-            color: white;
-        }
-
-        .promo-details p {
-            margin: 10px 0;
-            font-size: 0.95rem;
-        }
-
-        .product-info {
-            padding: 20px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .product-card.promo .product-info {
-            padding: 15px 20px;
-        }
-
-        .product-info h3 {
-            margin: 0 0 10px 0;
-            font-size: 1.2rem;
-            color: #333;
-        }
-
-        .product-card.promo .product-info h3 {
-            color: white;
-        }
-
-        .product-size {
-            font-size: 0.9rem;
-            color: #ad1457;
-            font-weight: 500;
-            margin: 5px 0;
-        }
-
-        .product-card.promo .product-size {
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .product-description {
-            font-size: 0.9rem;
-            color: #666;
-            line-height: 1.5;
-            margin: 10px 0;
-            flex: 1;
-        }
-
-        .product-card.promo .product-description {
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .product-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #f0f0f0;
-        }
-
-        .product-card.promo .product-footer {
-            border-top-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .product-price {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #d81b60;
-        }
-
-        .product-card.promo .product-price {
-            color: white;
-        }
-
-        .add-to-cart-btn {
-            background: linear-gradient(135deg, #e91e63 0%, #d81b60 100%);
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .add-to-cart-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(216, 27, 96, 0.4);
-        }
-
-        .add-to-cart-btn:active {
-            transform: scale(0.98);
-        }
-
-        /* CARRITO LATERAL */
-        .cart-sidebar {
-            width: 380px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            position: sticky;
-            top: 20px;
-            max-height: calc(100vh - 40px);
-        }
-
-        .cart-header {
-            padding: 20px;
-            border-bottom: 2px solid #f5f5f5;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .cart-header h2 {
-            margin: 0;
-            font-size: 1.4rem;
-            color: #333;
-        }
-
-        .close-cart {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #999;
-        }
-
-        .cart-items-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px 0;
-            min-height: 150px;
-        }
-
-        .empty-cart {
-            padding: 40px 20px;
-            text-align: center;
-            color: #999;
-        }
-
-        .empty-cart p {
-            margin: 10px 0;
-            font-size: 0.95rem;
-        }
-
-        .small-text {
-            font-size: 0.85rem !important;
-            color: #bbb !important;
-        }
-
-        .cart-item {
-            padding: 15px 20px;
-            border-bottom: 1px solid #f0f0f0;
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .cart-item-image {
-            width: 60px;
-            height: 60px;
-            border-radius: 6px;
-            overflow: hidden;
-            background: #f5f5f5;
-            flex-shrink: 0;
-        }
-
-        .cart-item-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .cart-item-details {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .cart-item-details h4 {
-            margin: 0 0 5px 0;
-            font-size: 0.95rem;
-            color: #333;
-            word-break: break-word;
-        }
-
-        .cart-item-details p {
-            margin: 0;
-            font-size: 0.85rem;
-            color: #d81b60;
-            font-weight: 600;
-        }
-
-        .cart-item-quantity {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            margin-top: 8px;
-        }
-
-        .qty-btn {
-            background: #f0f0f0;
-            border: none;
-            width: 24px;
-            height: 24px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            color: #666;
-            transition: all 0.2s;
-        }
-
-        .qty-btn:hover {
-            background: #e0e0e0;
-        }
-
-        .qty-display {
-            width: 30px;
-            text-align: center;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .remove-item {
-            background: white;
-            border: 1px solid #e0e0e0;
-            color: #999;
-            padding: 2px 6px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            border-radius: 3px;
-            transition: all 0.2s;
-        }
-
-        .remove-item:hover {
-            background: #fee;
-            border-color: #d81b60;
-            color: #d81b60;
-        }
-
-        .cart-footer {
-            padding: 20px;
-            border-top: 2px solid #f5f5f5;
-            background: #fafafa;
-            border-radius: 0 0 12px 12px;
-        }
-
-        .cart-summary {
-            margin-bottom: 15px;
-        }
-
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            font-size: 0.95rem;
-            color: #666;
-        }
-
-        .summary-row.discount {
-            color: #27ae60;
-            font-weight: 600;
-        }
-
-        .summary-row.total {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #d81b60;
-            padding-top: 10px;
-            border-top: 2px solid #f0f0f0;
-            margin-top: 10px;
-        }
-
-        .checkout-btn {
-            width: 100%;
-            background: linear-gradient(135deg, #d81b60 0%, #ad1457 100%);
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .checkout-btn:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 15px rgba(216, 27, 96, 0.3);
-        }
-
-        .checkout-btn:active {
-            transform: scale(0.98);
-        }
-
-        .checkout-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .clear-cart-btn {
-            width: 100%;
-            background: white;
-            color: #999;
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: all 0.2s;
-        }
-
-        .clear-cart-btn:hover {
-            background: #fee;
-            border-color: #d81b60;
-            color: #d81b60;
-        }
-
-        /* NOTIFICACIÓN */
-        .notification {
-            position: fixed;
-            bottom: 30px;
-            left: 30px;
-            background: #333;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 6px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            animation: slideIn 0.3s ease;
-            z-index: 1000;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(-400px);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        /* SHIPPING INFO ACTUALIZADO */
-        .shipping-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .shipping-item {
-            background: rgba(216, 27, 96, 0.05);
-            padding: 20px;
-            border-radius: 8px;
-            border-left: 4px solid #d81b60;
-        }
-
-        .shipping-item h4 {
-            margin: 0 0 10px 0;
-            color: #d81b60;
-            font-size: 1rem;
-        }
-
-        .shipping-item p {
-            margin: 0;
-            color: #666;
-            font-size: 0.95rem;
-        }
-
-        /* RESPONSIVE */
-        @media (max-width: 1024px) {
-            .store-wrapper {
-                flex-direction: column;
-            }
-
-            .cart-sidebar {
-                width: 100%;
-                position: relative;
-                top: 0;
-                max-height: none;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .products-grid {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 15px;
-            }
-
-            .cart-sidebar {
-                margin-top: 30px;
-            }
-
-            .close-cart {
-                display: block;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .products-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .product-image {
-                height: 200px;
-            }
-
-            .add-to-cart-btn {
-                padding: 8px 12px;
-                font-size: 0.8rem;
-            }
-        }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/landing.css">
+    <link rel="stylesheet" href="css/tienda.css">
 </head>
 
 <body>
-    <nav class="navbar">
+    <!-- Particles Background -->
+    <div class="particles-container" id="particles"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar scrolled" id="navbar">
         <div class="nav-container">
             <a href="../index.html" class="nav-logo">
                 <img src="assets/images/icon.png" alt="Esencia Spa Logo" class="nav-logo-img">
-                <span>esencia spa</span>
+                <span>Esencia Spa</span>
             </a>
-            <ul class="nav-menu">
-                <li><a href="../index.html">Inicio</a></li>
-                <li><a href="servicios.html">Servicios Spa</a></li>
-                <li class="cart-link"><a href="#" onclick="toggleCart(event)">🛒 Carrito <span id="cart-count"
-                            class="cart-badge">0</span></a></li>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../index.html" class="nav-link">Inicio</a></li>
+                <li><a href="#" class="nav-link active">Línea Siloé</a></li>
+                <li><a href="servicios.html" class="nav-link">Servicios</a></li>
+                <li class="cart-link">
+                    <a href="#" onclick="toggleCart(event)" class="nav-link">
+                        🛒 Carrito <span id="cart-count"
+                            style="background: #8b5cf6; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; margin-left: 4px;">0</span>
+                    </a>
+                </li>
             </ul>
+            <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </nav>
 
-    <div class="container">
-        <div class="page-header">
-            <h2>Tienda Línea Siloé</h2>
-            <p>Productos artesanales de origen natural para el cuidado de manos y pies</p>
-        </div>
+    <!-- Store Page Content -->
+    <div class="store-page">
+        <!-- Hero Section -->
+        <section class="store-hero">
+            <div class="store-hero-content">
+                <p class="brand-subtitle">Armonía Para Tu Vida</p>
+                <h1>SILOÉ COSMETICS</h1>
+                <p class="store-tagline">Línea Vital de Alta Eficacia</p>
+                <p class="store-description">
+                    Entendemos que la verdadera belleza comienza con la salud. Por eso, hemos desarrollado la Línea
+                    Vital para el cuidado de tus pies, una solución especializada y de alta eficacia diseñada
+                    exclusivamente para combatir infecciones fúngicas tanto en la planta del pie como en las uñas.
+                    ¡Recupera tu salud y tu seguridad!
+                </p>
+            </div>
+        </section>
 
-        <div class="store-wrapper">
-            <section class="store-section" id="store-main">
+        <!-- Store Container -->
+        <div class="section-container">
+            <div class="store-wrapper" <section class="store-section" id="store-main">
                 <div class="products-grid">
                     <div class="product-card">
                         <div class="product-image">
@@ -670,69 +173,75 @@
                         </div>
                     </div>
                 </div>
-            </section>
+                </section>
 
-            <aside class="cart-sidebar" id="cart-sidebar">
-                <div class="cart-header">
-                    <h2>Tu Carrito</h2>
-                    <button class="close-cart" onclick="toggleCart()">✕</button>
-                </div>
-
-                <div class="cart-items-container" id="cart-items-list">
-                    <div class="empty-cart">
-                        <p>Tu carrito está vacío</p>
-                        <p class="small-text">Agrega productos para comenzar tu compra</p>
+                <aside class="cart-sidebar" id="cart-sidebar">
+                    <div class="cart-header">
+                        <h2>Tu Carrito</h2>
+                        <button class="close-cart" onclick="toggleCart()">✕</button>
                     </div>
-                </div>
 
-                <div class="cart-footer">
-                    <div class="cart-summary">
-                        <div class="summary-row">
-                            <span>Subtotal:</span>
-                            <span id="subtotal">\</span>
-                        </div>
-                        <div class="summary-row discount" id="discount-row" style="display: none;">
-                            <span>Descuento:</span>
-                            <span id="discount">-\</span>
-                        </div>
-                        <div class="summary-row total">
-                            <span>Total:</span>
-                            <span id="total">\</span>
+                    <div class="cart-items-container" id="cart-items-list">
+                        <div class="empty-cart">
+                            <p>Tu carrito está vacío</p>
+                            <p class="small-text">Agrega productos para comenzar tu compra</p>
                         </div>
                     </div>
 
-                    <button class="checkout-btn" id="checkout-btn" onclick="proceedToCheckout()">Proceder al
-                        Pago</button>
-                    <button class="clear-cart-btn" id="clear-btn" onclick="clearCart()" style="display: none;">Limpiar
-                        Carrito</button>
-                </div>
-            </aside>
+                    <div class="cart-footer">
+                        <div class="cart-summary">
+                            <div class="summary-row">
+                                <span>Subtotal:</span>
+                                <span id="subtotal">\</span>
+                            </div>
+                            <div class="summary-row discount" id="discount-row" style="display: none;">
+                                <span>Descuento:</span>
+                                <span id="discount">-\</span>
+                            </div>
+                            <div class="summary-row total">
+                                <span>Total:</span>
+                                <span id="total">\</span>
+                            </div>
+                        </div>
+
+                        <button class="checkout-btn" id="checkout-btn" onclick="proceedToCheckout()">Proceder al
+                            Pago</button>
+                        <button class="clear-cart-btn" id="clear-btn" onclick="clearCart()"
+                            style="display: none;">Limpiar
+                            Carrito</button>
+                    </div>
+                </aside>
+            </div>
         </div>
 
-        <section class="shipping-info">
-            <h3>🚚 Información de Entrega</h3>
-            <div class="shipping-grid">
-                <div class="shipping-item">
-                    <h4>Itagüí y cercanos</h4>
-                    <p>Realizamos entregas en Itagüí y municipios cercanos</p>
-                </div>
-                <div class="shipping-item">
-                    <h4>Tiempo de entrega</h4>
-                    <p>1-3 días hábiles en Itagüí</p>
-                </div>
-                <div class="shipping-item">
-                    <h4>Otras zonas</h4>
-                    <p>Consulta disponibilidad y costos de envío</p>
+        <!-- Shipping Info -->
+        <section class="section-container">
+            <div class="shipping-info">
+                <h3>🚚 Información de Entrega</h3>
+                <div class="shipping-grid">
+                    <div class="shipping-item">
+                        <h4>Itagüí y cercanos</h4>
+                        <p>Realizamos entregas en Itagüí y municipios cercanos</p>
+                    </div>
+                    <div class="shipping-item">
+                        <h4>Tiempo de entrega</h4>
+                        <p>1-3 días hábiles en Itagüí</p>
+                    </div>
+                    <div class="shipping-item">
+                        <h4>Otras zonas</h4>
+                        <p>Consulta disponibilidad y costos de envío</p>
+                    </div>
                 </div>
             </div>
         </section>
     </div>
 
+    <!-- Floating WhatsApp Button -->
     <div class="whatsapp-float" onclick="openWhatsApp()">
-        <img src="assets/images/whatsapp_icon.png"
-            alt="WhatsApp, botón flotante para contactar al spa por mensaje instantáneo" class="whatsapp-icon">
+        <img src="assets/images/whatsapp_icon.png" alt="WhatsApp" class="whatsapp-icon">
     </div>
 
+    <script src="js/landing.js"></script>
     <script>
         const CART_KEY = 'esenciaSpaCart';
         const WHATSAPP_PHONE = '+573023946941';
@@ -918,6 +427,30 @@
             const encodedMessage = encodeURIComponent(message);
             const whatsappUrl = 'https://wa.me/' + WHATSAPP_PHONE + '?text=' + encodedMessage;
             window.open(whatsappUrl, '_blank');
+        }
+
+        // Create gold particles for hero section
+        function createGoldParticles() {
+            const hero = document.querySelector('.store-hero');
+            if (!hero) return;
+
+            const particleCount = 25;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'gold-particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                hero.appendChild(particle);
+            }
+        }
+
+        // Initialize on load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', createGoldParticles);
+        } else {
+            createGoldParticles();
         }
     </script>
 </body>
