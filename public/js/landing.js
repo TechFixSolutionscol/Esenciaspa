@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Observe elements that should animate on scroll
     const elementsToAnimate = document.querySelectorAll('.valor-card, .step-card, .contacto-card, .service-cta-card');
     elementsToAnimate.forEach(el => {
-        observateOnScroll.observe(el);
+        animateOnScroll.observe(el);
     });
 
 

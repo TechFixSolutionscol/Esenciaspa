@@ -362,6 +362,17 @@
     </div>
 
     <script src="js/landing.js"></script>
+    <script>
+        // Redirect all service buttons to reservation page
+        document.addEventListener('DOMContentLoaded', function () {
+            const serviceButtons = document.querySelectorAll('.service-btn');
+            serviceButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    window.location.href = 'reservar-cita.html';
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>
