@@ -66,11 +66,23 @@
                 <a href="#resumenes" data-section="resumenes">
                     <i class="fas fa-list-alt"></i> Resúmenes
                 </a>
+                <a href="#seccion_citas_cotizaciones" data-section="seccion_citas_cotizaciones">
+                    <i class="fas fa-calendar-check"></i> Citas y Cotizaciones
+                </a>
+                <a href="#historial-ventas" data-section="historial-ventas">
+                    <i class="fas fa-history"></i> Historial de Ventas
+                </a>
                 <a href="#contactos" data-section="contactos">
                     <i class="fas fa-address-book"></i> Contactos
                 </a>
                 <a href="#usuarios" data-section="usuarios">
                     <i class="fas fa-users"></i> Usuarios
+                </a>
+                <a href="#reservas-config" data-section="reservas-config">
+                    <i class="fas fa-calendar-alt"></i> Config. Reservas
+                </a>
+                <a href="#cierre-caja" data-section="cierre-caja">
+                    <i class="fas fa-calculator"></i> Cierre de Caja
                 </a>
                 <a href="#configuracion" data-section="configuracion">
                     <i class="fas fa-cog"></i> Configuración
@@ -164,6 +176,7 @@
                                 <th>Tipo</th>
                                 <th>Stock</th>
                                 <th>P. Venta</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="inventarioTableBody">
@@ -244,65 +257,178 @@
                 </ul>
             </section>
 
-            <!-- Sección: Contactos (Proveedores/Clientes) -->
+            <!-- Sección: Contactos (Odoo-Style Kanban) -->
             <section id="contactos" class="content-section">
-                <h2><i class="fas fa-address-book"></i> Gestión de Contactos</h2>
+                <style>
+                    /* Estilos Kanban (Estilo Odoo) */
+                    .kanban-container {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                        gap: 20px;
+                        padding: 10px 0;
+                    }
 
-                <div class="form-grid">
-                    <!-- Formulario Proveedores -->
-                    <div class="card"
-                        style="padding:20px; border-radius:12px; background:rgba(255,255,255,0.5); border:1px solid #ddd;">
-                        <h3><i class="fas fa-truck"></i> Nuevo Proveedor</h3>
-                        <form id="proveedorForm" class="form-grid single-col">
-                            <div class="form-group">
-                                <label for="c_nombre_pr">Nombre del Proveedor:</label>
-                                <input type="text" id="c_nombre_pr" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="c_telefono_pr">Teléfono:</label>
-                                <input type="text" id="c_telefono_pr">
-                            </div>
-                            <button type="submit" class="btn secondary-btn full-width">Guardar Proveedor</button>
-                        </form>
-                    </div>
+                    .kanban-card {
+                        background: white;
+                        border: 1px solid #e0e0e0;
+                        border-radius: 4px;
+                        /* Odoo usa bordes más rectos */
+                        padding: 10px;
+                        display: flex;
+                        gap: 15px;
+                        position: relative;
+                        transition: all 0.2s ease;
+                        cursor: pointer;
+                    }
 
-                    <!-- Formulario Clientes -->
-                    <div class="card"
-                        style="padding:20px; border-radius:12px; background:rgba(255,255,255,0.5); border:1px solid #ddd;">
-                        <h3><i class="fas fa-user-friends"></i> Nuevo Cliente</h3>
-                        <form id="clienteForm" class="form-grid single-col">
-                            <div class="form-group">
-                                <label for="c_documento_cl">Cédula / NIT:</label>
-                                <input type="text" id="c_documento_cl" required placeholder="Identificación única">
-                            </div>
-                            <div class="form-group">
-                                <label for="c_nombre_cl">Nombre del Cliente:</label>
-                                <input type="text" id="c_nombre_cl" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="c_telefono_cl">Teléfono:</label>
-                                <input type="text" id="c_telefono_cl">
-                            </div>
-                            <button type="submit" class="btn secondary-btn full-width">Guardar Cliente</button>
-                        </form>
+                    .kanban-card:hover {
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                        border-color: #ccc;
+                    }
+
+                    .kanban-avatar {
+                        width: 64px;
+                        height: 64px;
+                        background: #f0f0f0;
+                        border-radius: 4px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: #999;
+                        font-size: 32px;
+                        flex-shrink: 0;
+                    }
+
+                    .kanban-info {
+                        flex-grow: 1;
+                        overflow: hidden;
+                    }
+
+                    .kanban-name {
+                        font-weight: bold;
+                        color: #2c3e50;
+                        margin-bottom: 5px;
+                        font-size: 1.1em;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+
+                    .kanban-detail {
+                        font-size: 0.85em;
+                        color: #666;
+                        margin-bottom: 2px;
+                        display: flex;
+                        align-items: center;
+                        gap: 5px;
+                    }
+
+                    .kanban-actions {
+                        position: absolute;
+                        top: 5px;
+                        right: 5px;
+                        display: none;
+                        /* Se muestra en hover */
+                    }
+
+                    .kanban-card:hover .kanban-actions {
+                        display: flex;
+                        gap: 5px;
+                    }
+
+                    .kanban-actions button {
+                        padding: 4px 6px;
+                        font-size: 12px;
+                        border-radius: 3px;
+                    }
+
+                    /* Tabs Superiores */
+                    .odoo-tabs {
+                        display: flex;
+                        border-bottom: 1px solid #ddd;
+                        margin-bottom: 20px;
+                    }
+
+                    .odoo-tab {
+                        padding: 10px 20px;
+                        cursor: pointer;
+                        border-bottom: 3px solid transparent;
+                        color: #666;
+                        font-weight: 500;
+                    }
+
+                    .odoo-tab.active {
+                        border-bottom-color: var(--primary-color);
+                        color: var(--primary-color);
+                    }
+
+                    .odoo-tab:hover {
+                        background: #f9f9f9;
+                    }
+
+                    .odoo-toolbar {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: 20px;
+                        background: #f8f9fa;
+                        padding: 10px;
+                        border-radius: 5px;
+                        border: 1px solid #e0e0e0;
+                    }
+
+                    .odoo-search {
+                        width: 300px;
+                        padding: 6px 12px;
+                        border: 1px solid #ccc;
+                        border-radius: 3px;
+                    }
+                </style>
+
+                <div class="odoo-toolbar">
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn primary-btn" onclick="abrirModalCrearContacto('Cliente')">
+                            <i class="fas fa-plus"></i> Cliente
+                        </button>
+                        <button class="btn secondary-btn" onclick="abrirModalCrearContacto('Proveedor')">
+                            <i class="fas fa-plus"></i> Proveedor
+                        </button>
                     </div>
                 </div>
-                <div id="statusContactos" class="status-message"></div>
 
-                <div style="margin-top:20px; display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                    <div>
-                        <h4>Lista de Proveedores</h4>
-                        <ul id="listaProveedores" class="category-list">
-                            <li>Cargando...</li>
-                        </ul>
+                <div class="odoo-tabs">
+                    <div class="odoo-tab active" onclick="cambiarTabContacto('view-clientes', this)">
+                        <i class="fas fa-users"></i> Clientes
                     </div>
-                    <div>
-                        <h4>Lista de Clientes</h4>
-                        <ul id="listaClientes" class="category-list">
-                            <li>Cargando...</li>
-                        </ul>
+                    <div class="odoo-tab" onclick="cambiarTabContacto('view-proveedores', this)">
+                        <i class="fas fa-truck"></i> Proveedores
                     </div>
                 </div>
+
+                <div id="view-clientes" class="contact-view">
+                    <div id="grid-clientes" class="kanban-container">
+                        <!-- Clientes Cards -->
+                        <div style="grid-column: 1/-1; text-align: center; color: #999; padding: 40px;">
+                            <i class="fas fa-spinner fa-spin fa-2x"></i><br>Cargando Clientes...
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-proveedores" class="contact-view" style="display:none;">
+                    <div id="grid-proveedores" class="kanban-container">
+                        <!-- Proveedores Cards -->
+                        <div style="grid-column: 1/-1; text-align: center; color: #999; padding: 40px;">
+                            <i class="fas fa-spinner fa-spin fa-2x"></i><br>Cargando Proveedores...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Listas ocultas para compatibilidad con scripts viejos si los usan -->
+                <div style="display:none;">
+                    <ul id="listaProveedores"></ul>
+                    <ul id="listaClientes"></ul>
+                </div>
+
             </section>
 
             <!-- Sección 4: Compras (Pedido Multi-producto) -->
@@ -547,6 +673,465 @@
                 </div>
             </section>
 
+            <!-- Sección: Citas y Cotizaciones -->
+            <section id="seccion_citas_cotizaciones" class="content-section">
+                <h2><i class="fas fa-calendar-check"></i> Citas y Cotizaciones</h2>
+
+                <p class="status-message info" style="display:block;">
+                    Aquí puedes ver las citas pendientes con sus cotizaciones y convertirlas en ventas al finalizar el
+                    servicio.
+                </p>
+
+                <!-- Botones de control -->
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <button id="cargarCotizacionesBtn" class="btn primary-btn">
+                        <i class="fas fa-sync"></i> Actualizar Lista
+                    </button>
+                    <button id="verHistorialBtn" class="btn secondary-btn">
+                        <i class="fas fa-history"></i> Ver Historial
+                    </button>
+                </div>
+
+                <div id="statusCitasCotizaciones" class="status-message"></div>
+
+                <!-- Tabs -->
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e0e0e0;">
+                    <button id="tabPendientes" class="tab-btn active" data-tab="pendientes">
+                        <i class="fas fa-clock"></i> Pendientes (<span id="countPendientes">0</span>)
+                    </button>
+                    <button id="tabAtendidas" class="tab-btn" data-tab="atendidas">
+                        <i class="fas fa-check-circle"></i> Atendidas
+                    </button>
+                </div>
+
+                <!-- Contenedor Pestañas -->
+                <div id="tabContent">
+                    <!-- Tab: Cotizaciones Pendientes -->
+                    <div id="contentPendientes" class="tab-content active">
+                        <div style="max-height: 600px; overflow-y: auto;">
+                            <table class="data-table" id="cotizacionesPendientesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha Cita</th>
+                                        <th>Hora</th>
+                                        <th>Cliente</th>
+                                        <th>Teléfono</th>
+                                        <th>Servicio</th>
+                                        <th>Total</th>
+                                        <th>Estado Cita</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cotizacionesPendientesBody">
+                                    <tr>
+                                        <td colspan="8" style="text-align: center; padding: 40px;">
+                                            <i class="fas fa-inbox fa-3x" style="color: #ccc;"></i>
+                                            <p style="color: #999; margin-top: 10px;">Presiona "Actualizar Lista" para
+                                                cargar cotiz aciones</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Atendidas (Historial) -->
+                    <div id="contentAtendidas" class="tab-content">
+                        <p style="color: #666; text-align: center; padding: 40px;">
+                            <i class="fas fa-info-circle"></i>
+                            Funcionalidad de historial disponible próximamente
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Modal: Finalizar Servicio -->
+            <div id="modalFinalizarServicio" class="modal" style="display: none;">
+                <div class="modal-content" style="max-width: 500px;">
+                    <div class="modal-header"
+                        style="background: var(--secondary-color); color: white; padding: 20px; border-radius: 12px 12px 0 0;">
+                        <h3 style="margin: 0;"><i class="fas fa-check-circle"></i> Finalizar Servicio</h3>
+                        <span class="close-modal" style="cursor: pointer; font-size: 24px;"
+                            onclick="cerrarModalFinalizar()">&times;</span>
+                    </div>
+                    <div class="modal-body" style="padding: 30px;">
+                        <div id="resumenServicio"
+                            style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                            <!-- Se llena dinámicamente -->
+                        </div>
+
+                        <div class="form-group">
+                            <label for="metodoPago"><b>Método de Pago:</b></label>
+                            <select id="metodoPago"
+                                style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #e0e0e0;">
+                                <option value="Efectivo">Efectivo</option>
+                                <option value="Tarjeta">Tarjeta</option>
+                                <option value="Transferencia">Transferencia</option>
+                                <option value="Nequi">Nequi</option>
+                                <option value="Daviplata">Daviplata</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="observacionesPago">Observaciones (opcional):</label>
+                            <textarea id="observacionesPago" rows="3"
+                                style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #e0e0e0;"
+                                placeholder="Notas adicionales..."></textarea>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button id="btnConfirmarVenta" class="btn primary-btn" style="flex: 1;">
+                                <i class="fas fa-dollar-sign"></i> Confirmar Venta
+                            </button>
+                            <button onclick="cerrarModalFinalizar()" class="btn secondary-btn" style="flex: 1;">
+                                <i class="fas fa-times"></i> Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Sección: Historial de Ventas -->
+            <section id="historial-ventas" class="content-section">
+                <h2><i class="fas fa-history"></i> Historial de Ventas y Facturación</h2>
+
+                <div class="control-panel"
+                    style="display:flex; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+                    <div class="search-box">
+                        <input type="text" id="searchHistorial" placeholder="Buscar por ID o Cliente..."
+                            style="padding:10px; border-radius:5px; border:1px solid #ccc; width:100%; max-width:300px;">
+                    </div>
+                    <button id="btnRefrescarHistorial" class="btn secondary-btn">
+                        <i class="fas fa-sync"></i> Refrescar
+                    </button>
+                </div>
+
+                <div id="statusHistorial" class="status-message" style="display:none;"></div>
+
+                <div class="table-container" style="max-height: 500px; overflow-y: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID Factura</th>
+                                <th>Fecha</th>
+                                <th>Cliente</th>
+                                <th>Total</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historialVentasBody">
+                            <tr>
+                                <td colspan="6" style="text-align:center; padding:30px; color:#999;">
+                                    <i class="fas fa-search" style="font-size:24px; margin-bottom:10px;"></i>
+                                    <p>Presione "Refrescar" para cargar el historial.</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Modal Detalle Factura -->
+            <div id="modalDetalleFactura" class="modal" style="display:none;">
+                <div class="modal-content" style="max-width: 600px;">
+                    <span class="close-modal" onclick="cerrarModalDetalle()"
+                        style="float:right; cursor:pointer; font-size:24px;">&times;</span>
+                    <div id="detalleFacturaContent"></div>
+                    <div style="margin-top:20px; text-align:right;">
+                        <button class="btn secondary-btn" onclick="cerrarModalDetalle()">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Anular Factura -->
+            <div id="modalAnularFactura" class="modal" style="display:none;">
+                <div class="modal-content" style="max-width: 400px;">
+                    <div class="modal-header"
+                        style="background:var(--danger-color); color:white; padding:15px; margin:-20px -20px 20px -20px; border-radius:8px 8px 0 0;">
+                        <h3 style="margin:0;"><i class="fas fa-ban"></i> Anular Factura</h3>
+                    </div>
+                    <p>Por favor ingrese el motivo de la anulación:</p>
+                    <textarea id="motivoAnulacion" rows="3"
+                        style="width:100%; margin-bottom:15px; padding:10px; border:1px solid #ddd; border-radius:4px;"
+                        placeholder="Ej: Error en digitación, devolución de producto..."></textarea>
+                    <div style="display:flex; gap:10px; justify-content:flex-end;">
+                        <button class="btn secondary-btn" onclick="cerrarModalAnular()">Cancelar</button>
+                        <button id="btnConfirmarAnulacion" class="btn danger-btn"
+                            style="background:var(--danger-color); color:white; border:none; padding:8px 16px; border-radius:4px; cursor:pointer;">Confirmar
+                            Anulación</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección: Cierre de Caja (FASE 3) -->
+            <section id="cierre-caja" class="content-section">
+                <h2><i class="fas fa-calculator"></i> Control de Cierre Diario</h2>
+
+                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+
+                    <!-- Columna Izquierda: Resumen Sistema -->
+                    <div style="flex: 1; min-width: 300px; background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                        <h3 style="margin-top:0; color: #555;">Resumen del Sistema</h3>
+                        <div class="row" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Ventas Totales:</span>
+                            <span id="sysTotalVentas" style="font-weight:bold;">$0</span>
+                        </div>
+                        <hr>
+                        <div class="row" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Efectivo:</span>
+                            <span id="sysEfectivo">$0</span>
+                        </div>
+                        <div class="row" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span style="color:red;">(-) Gastos:</span>
+                            <span id="sysGastos" style="color:red;">$0</span>
+                        </div>
+                        <div class="row" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Tarjeta:</span>
+                            <span id="sysTarjeta">$0</span>
+                        </div>
+                        <div class="row" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Transferencia:</span>
+                            <span id="sysTransferencia">$0</span>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Conteo Real -->
+                    <div
+                        style="flex: 1; min-width: 300px; background: white; padding: 20px; border-radius: 8px; border: 1px solid #ddd;">
+                        <h3 style="margin-top:0; color: var(--primary-color);">Conteo Real</h3>
+
+                        <div class="form-group">
+                            <label>Efectivo en Caja (Real):</label>
+                            <input type="number" id="realEfectivo" placeholder="0" class="form-control"
+                                style="width:100%; padding:8px;">
+                            <small id="difEfectivo" style="display:block; text-align:right; font-weight:bold;">Diff:
+                                $0</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Voucher Tarjetas (Real):</label>
+                            <input type="number" id="realTarjeta" placeholder="0" class="form-control"
+                                style="width:100%; padding:8px;">
+                            <small id="difTarjeta" style="display:block; text-align:right; font-weight:bold;">Diff:
+                                $0</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Comprobantes Transferencia:</label>
+                            <input type="number" id="realTransferencia" placeholder="0" class="form-control"
+                                style="width:100%; padding:8px;">
+                            <small id="difTransferencia"
+                                style="display:block; text-align:right; font-weight:bold;">Diff: $0</small>
+                        </div>
+
+                        <hr>
+                        <div
+                            style="display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: bold;">
+                            <span>Total Real:</span>
+                            <span id="totalRealCierre">$0</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 1rem; margin-top: 10px;">
+                            <span>Diferencia Total:</span>
+                            <span id="difTotalCierre" class="text-muted">$0</span>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 20px;">
+                            <label>Notas del Cierre:</label>
+                            <textarea id="notasCierre" rows="3" style="width:100%; padding:8px;"
+                                placeholder="Ej: Faltan $2.000 de cambio..."></textarea>
+                        </div>
+
+                        <button id="btnCerrarCaja" class="btn primary-btn full-width" style="margin-top: 20px;">
+                            <i class="fas fa-save"></i> Guardar Cierre del Día
+                        </button>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Sección: Configuración de Reservas -->
+            <section id="reservas-config" class="content-section">
+                <h2><i class="fas fa-calendar-alt"></i> Configuración de Reservas</h2>
+
+                <!-- Estado de carga -->
+                <div id="statusReservasConfig" class="status-message"></div>
+
+                <!-- Horarios de Atención -->
+                <div
+                    style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 style="margin: 0;"><i class="fas fa-clock"></i> Horarios de Atención</h3>
+                        <button id="refreshConfigBtn" class="btn secondary-btn">
+                            <i class="fas fa-sync"></i> Refrescar
+                        </button>
+                    </div>
+
+                    <form id="horariosForm">
+                        <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+                            <!-- Lunes -->
+                            <div class="form-group">
+                                <label><strong>Lunes</strong></label>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                    <div>
+                                        <label for="lunes_apertura" style="font-size: 0.9rem;">Apertura</label>
+                                        <input type="time" id="lunes_apertura" name="horario_lunes_apertura"
+                                            class="horario-input">
+                                    </div>
+                                    <div>
+                                        <label for="lunes_cierre" style="font-size: 0.9rem;">Cierre</label>
+                                        <input type="time" id="lunes_cierre" name="horario_lunes_cierre"
+                                            class="horario-input">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Martes -->
+                            <div class="form-group">
+                                <label><strong>Martes</strong></label>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                    <div>
+                                        <label for="martes_apertura" style="font-size: 0.9rem;">Apertura</label>
+                                        <input type="time" id="martes_apertura" name="horario_martes_apertura"
+                                            class="horario-input">
+                                    </div>
+                                    <div>
+                                        <label for="martes_cierre" style="font-size: 0.9rem;">Cierre</label>
+                                        <input type="time" id="martes_cierre" name="horario_martes_cierre"
+                                            class="horario-input">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Miércoles -->
+                            <div class="form-group">
+                                <label><strong>Miércoles</strong></label>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                    <div>
+                                        <label for="miercoles_apertura" style="font-size: 0.9rem;">Apertura</label>
+                                        <input type="time" id="miercoles_apertura" name="horario_miercoles_apertura"
+                                            class="horario-input">
+                                    </div>
+                                    <div>
+                                        <label for="miercoles_cierre" style="font-size: 0.9rem;">Cierre</label>
+                                        <input type="time" id="miercoles_cierre" name="horario_miercoles_cierre"
+                                            class="horario-input">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Jueves -->
+                            <div class="form-group">
+                                <label><strong>Jueves</strong></label>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                    <div>
+                                        <label for="jueves_apertura" style="font-size: 0.9rem;">Apertura</label>
+                                        <input type="time" id="jueves_apertura" name="horario_jueves_apertura"
+                                            class="horario-input">
+                                    </div>
+                                    <div>
+                                        <label for="jueves_cierre" style="font-size: 0.9rem;">Cierre</label>
+                                        <input type="time" id="jueves_cierre" name="horario_jueves_cierre"
+                                            class="horario-input">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Viernes -->
+                            <div class="form-group">
+                                <label><strong>Viernes</strong></label>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                    <div>
+                                        <label for="viernes_apertura" style="font-size: 0.9rem;">Apertura</label>
+                                        <input type="time" id="viernes_apertura" name="horario_viernes_apertura"
+                                            class="horario-input">
+                                    </div>
+                                    <div>
+                                        <label for="viernes_cierre" style="font-size: 0.9rem;">Cierre</label>
+                                        <input type="time" id="viernes_cierre" name="horario_viernes_cierre"
+                                            class="horario-input">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sábado -->
+                            <div class="form-group">
+                                <label><strong>Sábado</strong></label>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                    <div>
+                                        <label for="sabado_apertura" style="font-size: 0.9rem;">Apertura</label>
+                                        <input type="time" id="sabado_apertura" name="horario_sabado_apertura"
+                                            class="horario-input">
+                                    </div>
+                                    <div>
+                                        <label for="sabado_cierre" style="font-size: 0.9rem;">Cierre</label>
+                                        <input type="time" id="sabado_cierre" name="horario_sabado_cierre"
+                                            class="horario-input">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Domingo -->
+                            <div class="form-group">
+                                <label><strong>Domingo</strong></label>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                    <div>
+                                        <label for="domingo_apertura" style="font-size: 0.9rem;">Apertura</label>
+                                        <input type="time" id="domingo_apertura" name="horario_domingo_apertura"
+                                            class="horario-input" placeholder="Cerrado">
+                                    </div>
+                                    <div>
+                                        <label for="domingo_cierre" style="font-size: 0.9rem;">Cierre</label>
+                                        <input type="time" id="domingo_cierre" name="horario_domingo_cierre"
+                                            class="horario-input" placeholder="Cerrado">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Configuraciones Generales -->
+                <div
+                    style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                    <h3 style="margin-top: 0;"><i class="fas fa-sliders-h"></i> Configuraciones Generales</h3>
+
+                    <form id="configGeneralForm" class="form-grid">
+                        <div class="form-group">
+                            <label for="anticipacion_minima">Anticipación mínima (horas)</label>
+                            <input type="number" id="anticipacion_minima" name="anticipacion_minima_horas" min="0"
+                                max="72" step="1" value="2">
+                            <small>Tiempo mínimo requerido antes de una cita</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="intervalo_slots">Intervalo de slots (minutos)</label>
+                            <select id="intervalo_slots" name="intervalo_slots_minutos">
+                                <option value="15">15 minutos</option>
+                                <option value="30" selected>30 minutos</option>
+                                <option value="60">60 minutos</option>
+                            </select>
+                            <small>Frecuencia de horarios disponibles</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dias_cerrado">Días cerrados</label>
+                            <input type="text" id="dias_cerrado" name="dias_cerrado" value="domingo" readonly>
+                            <small>Días en los que no se aceptan reservas</small>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Botones de acción -->
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button id="guardarConfigBtn" class="btn primary-btn">
+                        <i class="fas fa-save"></i> Guardar Configuración
+                    </button>
+                </div>
+            </section>
+
             <!-- Sección 7: Configuración -->
             <section id="configuracion" class="content-section">
                 <h2><i class="fas fa-cog"></i> Configuración de Base de Datos</h2>
@@ -566,6 +1151,31 @@
                 <div id="statusConfig" class="status-message"></div>
             </section>
         </main>
+    </div>
+
+    <!-- Modal Universal de Mantenimiento (CRUD) -->
+    <div id="modalMantenimiento" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header"
+                style="background: var(--primary-color); color: white; padding: 15px; border-radius: 8px 8px 0 0;">
+                <h3 id="modalTitleMant" style="margin: 0;">Editar Registro</h3>
+                <span class="close-modal" onclick="cerrarModalMantenimiento()"
+                    style="cursor: pointer; float: right; font-size: 24px;">&times;</span>
+            </div>
+            <div class="modal-body" style="padding: 20px;">
+                <form id="formMantenimiento">
+                    <!-- Campos dinámicos aquí -->
+                </form>
+                <div style="margin-top: 20px; text-align: right;">
+                    <button type="button" class="btn secondary-btn"
+                        onclick="cerrarModalMantenimiento()">Cancelar</button>
+                    <button type="button" id="btnGuardarMant" class="btn primary-btn"
+                        onclick="guardarCambiosMantenimiento()">
+                        <i class="fas fa-save"></i> Guardar Cambios
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -599,11 +1209,119 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="js/script.js"></script>
     <script src="js/user_management.js"></script>
+    <script src="js/reservas_config.js"></script>
+    <script src="js/citas_cotizaciones.js"></script>
+    <script src="js/historial_ventas.js"></script>
+    <script src="js/cierre_caja.js"></script>
+    <script src="js/mantenimiento.js"></script>
 
     <!-- Contenedor de Toasts -->
     <div id="toast-container"
         style="position:fixed; bottom:20px; right:20px; z-index:10000; display:flex; flex-direction:column; gap:10px;">
     </div>
+
+    <style>
+        /* Estilos para Historial de Ventas */
+        .row-anulada {
+            background-color: #ffebee !important;
+            opacity: 0.7;
+        }
+
+        .row-anulada td {
+            color: #c62828;
+        }
+
+        .badge-anulada {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #c62828;
+        }
+
+        .badge-activa {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+
+        .table-simple th,
+        .table-simple td {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        /* Estilos para tabs de citas y cotizaciones */
+        .tab-btn {
+            padding: 12px 24px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary-color);
+        }
+
+        .tab-btn.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Badges para estado de citas */
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-pendiente {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-confirmada {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .badge-atendida {
+            background: #d4edda;
+            color: #155724;
+        }
+    </style>
 
 </body>
 

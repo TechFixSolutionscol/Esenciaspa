@@ -10,13 +10,17 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx52WXG_TEBl7OQfb1B7
 
 let servicioActual = null;
 let servicios = [];
+let configuracion = null;
 
-// Cargar servicios al iniciar
+// Cargar servicios y configuración al iniciar
 document.addEventListener('DOMContentLoaded', async () => {
     // Establecer fecha mínima (hoy)
     const hoy = new Date().toISOString().split('T')[0];
     document.getElementById('fecha').setAttribute('min', hoy);
     document.getElementById('fecha').value = hoy;
+
+    // Cargar configuración de horarios
+    await cargarConfiguracion();
 
     await cargarServicios();
 
@@ -25,6 +29,67 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     setupEventListeners();
 });
+
+/**
+ * Cargar configuración de horarios desde backend
+ */
+async function cargarConfiguracion() {
+    try {
+        const response = await fetch(`${SCRIPT_URL}?action=getConfiguracion`);
+        const data = await response.json();
+
+        console.log('📡 Respuesta completa de configuración:', data);
+
+        if (data.success) {
+            configuracion = data;
+
+            // Debug detallado
+            console.log('✅ Configuración cargada:');
+            console.log('   - Config general:', data.config);
+            console.log('   - Horarios completos:', data.horarios);
+
+            // Verificar cada día
+            const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
+            dias.forEach(dia => {
+                const horario = data.horarios[dia];
+                console.log(`   - ${dia}:`, horario || 'CERRADO');
+            });
+
+            configuracionCargada = true;
+        } else {
+            console.error('❌ Error en respuesta:', data.error);
+            // Usar configuración por defecto en caso de error
+            configuracion = getConfiguracionPorDefecto();
+        }
+    } catch (e) {
+        console.error('❌ Error cargando configuración:', e);
+        // Usar configuración por defecto en caso de error
+        configuracion = getConfiguracionPorDefecto();
+    }
+}
+
+/**
+ * Configuración por defecto (fallback)
+ */
+function getConfiguracionPorDefecto() {
+    return {
+        success: true,
+        config: {
+            anticipacion_minima_horas: '2',
+            intervalo_slots_minutos: '30',
+            dias_cerrado: 'domingo'
+        },
+        horarios: {
+            lunes: { apertura: '09:00', cierre: '18:00' },
+            martes: { apertura: '09:00', cierre: '18:00' },
+            miercoles: { apertura: '09:00', cierre: '18:00' },
+            jueves: { apertura: '09:00', cierre: '18:00' },
+            viernes: { apertura: '09:00', cierre: '18:00' },
+            sabado: { apertura: '09:00', cierre: '14:00' },
+            domingo: null
+        }
+    };
+}
 
 /**
  * Cargar servicios desde backend
@@ -121,11 +186,22 @@ function setupEventListeners() {
     // Al cambiar servicio
     servicioSelect.addEventListener('change', async (e) => {
         await actualizarDuracion();
+        // Actualizar slots disponibles
+        actualizarSelectorHora();
+    });
+
+    // Al cambiar fecha
+    fechaInput.addEventListener('change', () => {
+        validarDiaHabil();
+        // Actualizar slots disponibles
+        actualizarSelectorHora();
     });
 
     // Al marcar/desmarcar retiro
     requiereRetiroCheck.addEventListener('change', async () => {
         await actualizarDuracion();
+        // Actualizar slots disponibles
+        actualizarSelectorHora();
     });
 
     // Al cambiar hora
@@ -136,7 +212,9 @@ function setupEventListeners() {
     // Submit del formulario
     document.getElementById('reserva-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        await crearReserva();
+        if (validarFormulario()) {
+            await crearReserva();
+        }
     });
 }
 
@@ -396,4 +474,177 @@ function mostrarError(mensaje) {
  */
 function ocultarAlerta() {
     document.getElementById('alert').classList.remove('active');
+}
+
+/**
+ * Generar slots de tiempo disponibles
+ * @param {string} fecha - Fecha seleccionada (YYYY-MM-DD)
+ * @param {number} duracionServicio - Duración del servicio en minutos
+ * @returns {Array} Array de horas disponibles
+ */
+function generarSlots(fecha, duracionServicio) {
+    if (!configuracion) return [];
+
+    // Parsear fecha de forma segura (evitar problemas de zona horaria)
+    const [year, month, day] = fecha.split('-').map(Number);
+    const fechaObj = new Date(year, month - 1, day); // Mes es 0-indexed
+
+    // Mapeo SIN acentos (debe coincidir con backend)
+    const diaSemana = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'][fechaObj.getDay()];
+
+    console.log('🔍 Debug generarSlots:', {
+        fechaInput: fecha,
+        fechaObj: fechaObj.toDateString(),
+        diaSemanaIndex: fechaObj.getDay(),
+        diaSemana: diaSemana,
+        horarioDisponible: configuracion.horarios[diaSemana]
+    });
+
+    const horario = configuracion.horarios[diaSemana];
+
+    if (!horario) {
+        console.warn(`⚠️ No hay horario para ${diaSemana}`);
+        return []; // Día cerrado
+    }
+
+    const slots = [];
+    const [horaApertura, minApertura] = horario.apertura.split(':').map(Number);
+    const [horaCierre, minCierre] = horario.cierre.split(':').map(Number);
+    const intervalo = parseInt(configuracion.config.intervalo_slots_minutos) || 30;
+
+    let horaActual = horaApertura * 60 + minApertura; // minutos desde medianoche
+    const horaCierreMin = horaCierre * 60 + minCierre;
+
+    // Si es hoy, aplicar anticipación mínima
+    const ahora = new Date();
+    const fechaSeleccionada = new Date(year, month - 1, day);
+    let minimaHora = 0;
+
+    if (fechaSeleccionada.toDateString() === ahora.toDateString()) {
+        const anticipacion = parseInt(configuracion.config.anticipacion_minima_horas) || 2;
+        minimaHora = (ahora.getHours() * 60 + ahora.getMinutes()) + (anticipacion * 60);
+    }
+
+    // Generar slots que permitan completar el servicio antes del cierre
+    while (horaActual + duracionServicio <= horaCierreMin) {
+        if (horaActual >= minimaHora) {
+            const h = Math.floor(horaActual / 60);
+            const m = horaActual % 60;
+            const horaStr = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+            slots.push(horaStr);
+        }
+        horaActual += intervalo;
+    }
+
+    console.log(`✅ Slots generados para ${diaSemana}:`, slots.length);
+    return slots;
+}
+
+/**
+ * Actualizar selector de hora con slots disponibles
+ */
+function actualizarSelectorHora() {
+    const fecha = document.getElementById('fecha').value;
+    const servicioId = document.getElementById('servicio').value;
+    const horaSelect = document.getElementById('hora');
+
+    if (!fecha || !servicioId || !configuracion) {
+        horaSelect.innerHTML = '<option value="">-- Primero seleccione servicio y fecha --</option>';
+        return;
+    }
+
+    // Obtener duración del servicio
+    const servicio = servicios.find(s => s.id === servicioId);
+    if (!servicio) {
+        horaSelect.innerHTML = '<option value="">-- Error: Servicio no encontrado --</option>';
+        return;
+    }
+
+    const duracion = servicioActual ? servicioActual.duracionTotal : (servicio.duracion_base_minutos || 60);
+    const slots = generarSlots(fecha, duracion);
+
+    if (slots.length === 0) {
+        horaSelect.innerHTML = '<option value="">-- No hay horarios disponibles para este día --</option>';
+
+        // Parsear fecha de forma segura
+        const [year, month, day] = fecha.split('-').map(Number);
+        const fechaObj = new Date(year, month - 1, day);
+
+        // Nombres CON acentos solo para mostrar al usuario
+        const diasDisplay = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+        const diaSemana = diasDisplay[fechaObj.getDay()];
+        mostrarError(`No abrimos los ${diaSemana}. Por favor seleccione otro día.`);
+        return;
+    }
+
+    horaSelect.innerHTML = '<option value="">-- Seleccione una hora --</option>' +
+        slots.map(slot => `<option value="${slot}">${slot}</option>`).join('');
+
+    // Actualizar info de slots
+    const slotsInfo = document.getElementById('slots-info');
+    if (slotsInfo) {
+        slotsInfo.textContent = `${slots.length} horarios disponibles`;
+    }
+}
+
+/**
+ * Validar que el día seleccionado sea hábil
+ */
+function validarDiaHabil() {
+    const fecha = document.getElementById('fecha').value;
+    if (!fecha || !configuracion) return true;
+
+    // Parsear fecha de forma segura
+    const [year, month, day] = fecha.split('-').map(Number);
+    const fechaObj = new Date(year, month - 1, day);
+
+    // Mapeo SIN acentos para buscar en configuración
+    const diaSemana = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'][fechaObj.getDay()];
+    // Nombres CON acentos solo para mostrar
+    const diasDisplay = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+    const diaEspanol = diasDisplay[fechaObj.getDay()];
+
+    if (!configuracion.horarios[diaSemana]) {
+        mostrarError(`No abrimos los ${diaEspanol}s. Por favor seleccione otro día.`);
+        document.getElementById('fecha').value = '';
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * Validar formulario antes de enviar
+ */
+function validarFormulario() {
+    const fecha = new Date(document.getElementById('fecha').value);
+    const ahora = new Date();
+    ahora.setHours(0, 0, 0, 0);
+
+    // Fecha pasada
+    if (fecha < ahora) {
+        mostrarError('No puedes reservar en fechas pasadas');
+        return false;
+    }
+
+    // Teléfono
+    const telefono = document.getElementById('telefono').value.replace(/\D/g, '');
+    if (telefono.length !== 10) {
+        mostrarError('El teléfono debe tener 10 dígitos');
+        return false;
+    }
+
+    // Hora seleccionada
+    if (!document.getElementById('hora').value) {
+        mostrarError('Debes seleccionar una hora');
+        return false;
+    }
+
+    // Servicio seleccionado
+    if (!document.getElementById('servicio').value) {
+        mostrarError('Debes seleccionar un servicio');
+        return false;
+    }
+
+    return true;
 }

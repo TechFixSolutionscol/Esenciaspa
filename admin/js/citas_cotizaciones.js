@@ -15,7 +15,7 @@ let cotizacionSeleccionada = null;
  */
 document.addEventListener('DOMContentLoaded', () => {
     // Solo inicializar si estamos en la sección de citas-cotizaciones
-    if (document.getElementById('citas-cotizaciones')) {
+    if (document.getElementById('seccion_citas_cotizaciones')) {
         setupEventListeners();
         console.log('✅ Módulo de Citas y Cotizaciones inicializado');
     }

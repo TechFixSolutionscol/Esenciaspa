@@ -145,10 +145,16 @@ function refreshProductSelects() {
     });
 }
 
+const PROVEEDORES_CACHE = [];
+const CLIENTES_CACHE = [];
+
 async function loadContactos(type) {
-    const listId = type === 'Proveedores' ? 'listaProveedores' : 'listaClientes';
-    const selectId = type === 'Proveedores' ? 'co_proveedor' : 'v_cliente';
-    const listEl = document.getElementById(listId);
+    const isProv = type === 'Proveedores';
+    const gridId = isProv ? 'grid-proveedores' : 'grid-clientes';
+    const gridEl = document.getElementById(gridId);
+
+    // Also update select dropdowns if they exist (for invoices/orders)
+    const selectId = isProv ? 'co_proveedor' : 'v_cliente';
     const selectEl = document.getElementById(selectId);
 
     try {
@@ -157,11 +163,19 @@ async function loadContactos(type) {
 
         if (data.status === 'success') {
             const contacts = data.data;
-            if (type === 'Proveedores') cachedData.proveedores = contacts;
+            if (isProv) cachedData.proveedores = contacts;
             else cachedData.clientes = contacts;
 
-            listEl.innerHTML = contacts.map(c => `<li><b>${c.nombre}</b> ${c.telefono ? `- ${c.telefono}` : ''}</li>`).join('') || `<li>No hay ${type.toLowerCase()}.</li>`;
+            // Render Kanban Grid
+            if (gridEl) {
+                if (contacts.length === 0) {
+                    gridEl.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:20px;">No hay ${type.toLowerCase()} registrados.</div>`;
+                } else {
+                    gridEl.innerHTML = contacts.map(c => renderKanbanCard(c, isProv ? 'Proveedor' : 'Cliente')).join('');
+                }
+            }
 
+            // Render Select Options (Legacy support)
             if (selectEl) {
                 selectEl.innerHTML = '<option value="">Seleccionar</option>' +
                     contacts.map(c => `<option value="${c.nombre}">${c.nombre}</option>`).join('');
@@ -169,8 +183,71 @@ async function loadContactos(type) {
         }
     } catch (e) {
         console.error(`Error cargando ${type}:`, e);
+        if (gridEl) gridEl.innerHTML = `<div style="color:red; text-align:center;">Error al cargar datos.</div>`;
     }
 }
+
+function renderKanbanCard(c, tipo) {
+    if (!c || !c.nombre) return ''; // Skip invalid records
+
+    // Generar avatar o usar imagen si existiera
+    const inicial = String(c.nombre || '?').charAt(0).toUpperCase();
+    const subtext = tipo === 'Cliente' ? (c.email || 'Sin email') : (c.telefono || 'Sin teléfono');
+
+    return `
+    <div class="kanban-card" onclick='abrirModalEditar("${tipo}", ${JSON.stringify(c).replace(/'/g, "&apos;")})'>
+        <div class="kanban-avatar">
+            ${inicial}
+        </div>
+        <div class="kanban-info">
+            <div class="kanban-name" title="${c.nombre}">${c.nombre}</div>
+            <div class="kanban-detail" style="font-weight:bold; color:#555;"><i class="fas fa-id-card"></i> ${c.documento || c.documento_ccnit || '---'}</div>
+            <div class="kanban-detail"><i class="fas fa-phone"></i> ${c.telefono || '---'}</div>
+            <div class="kanban-detail"><i class="fas fa-map-marker-alt"></i> ${c.direccion || '---'}</div>
+            <div class="kanban-detail" style="font-size:0.8em; color:#999; margin-top:5px;">${tipo}</div>
+        </div>
+        <div class="kanban-actions" onclick="event.stopPropagation()">
+            <button class="btn btn-sm secondary-btn" onclick='abrirModalEditar("${tipo}", ${JSON.stringify(c).replace(/'/g, "&apos;")})' title="Editar">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-sm danger-btn" onclick='eliminarRegistro("${tipo}", "${c.id}")' title="Eliminar">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    </div>
+    `;
+}
+
+// === Funciones Auxiliares Kanban ===
+
+function abrirModalCrearContacto(tipo) {
+    // Abrir modal de mantenimiento con objeto vacío
+    abrirModalEditar(tipo, { nombre: '' });
+}
+
+function cambiarTabContacto(viewId, tabElement) {
+    // Ocultar todas las vistas
+    document.getElementById('view-clientes').style.display = 'none';
+    document.getElementById('view-proveedores').style.display = 'none';
+
+    // Quitar active de tabs
+    document.querySelectorAll('.odoo-tab').forEach(t => t.classList.remove('active'));
+
+    // Mostrar seleccionada
+    document.getElementById(viewId).style.display = 'block';
+    tabElement.classList.add('active');
+}
+
+function filtrarContactos() {
+    const q = document.getElementById('searchContactos').value.toLowerCase();
+    const cards = document.querySelectorAll('.kanban-card');
+
+    cards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        card.style.display = text.includes(q) ? 'flex' : 'none';
+    });
+}
+
 
 async function handleContactPost(e, action) {
     e.preventDefault();
@@ -287,9 +364,12 @@ function setupForms() {
         dashCalcBtn.addEventListener('click', calcularResumenFinanciero);
     }
 
-    // Contactos
-    document.getElementById('proveedorForm').addEventListener('submit', (e) => handleContactPost(e, 'agregarProveedor'));
-    document.getElementById('clienteForm').addEventListener('submit', (e) => handleContactPost(e, 'agregarCliente'));
+    // Contactos (Legacy forms removed, but keep safe check)
+    const provForm = document.getElementById('proveedorForm');
+    if (provForm) provForm.addEventListener('submit', (e) => handleContactPost(e, 'agregarProveedor'));
+
+    const cliForm = document.getElementById('clienteForm');
+    if (cliForm) cliForm.addEventListener('submit', (e) => handleContactPost(e, 'agregarCliente'));
 
     // Categorías y Productos
     document.getElementById('categoriaForm').addEventListener('submit', (e) => handlePostAction(e, 'agregarCategoria', 'statusCategoria'));
@@ -1061,11 +1141,15 @@ function renderInventarioTable(productos) {
             <tr>
                 <td>${p.id}</td>
                 <td>${p.nombre}</td>
-                <td>${p.código}</td>
-                <td>${p.categoría}</td>
+                <td>${p.codigo || p.código}</td>  <!-- Aseguramos compatibilidad con nombres de campo -->
+                <td>${p.categoria || p.categoría}</td>
                 <td><span style="padding: 4px 8px; border-radius: 6px; font-size: 0.85em; background: ${tipo === 'Servicio' ? '#e3f2fd' : '#f1f8e9'}; color: ${tipo === 'Servicio' ? '#1976d2' : '#558b2f'};">${tipo}</span></td>
                 <td ${stockStyle}>${stockDisplay}</td>
                 <td>${formatCOP(p.precio_venta)}</td>
+                <td>
+                    <button class="btn btn-sm secondary-btn" onclick='abrirModalEditar("Producto", ${JSON.stringify(p)})' title="Editar"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm danger-btn" onclick='eliminarRegistro("Producto", "${p.id}")' title="Eliminar"><i class="fas fa-trash"></i></button>
+                </td>
             </tr>
         `;
     }).join('');

@@ -60,9 +60,28 @@ function doGet(e) {
             result = getResumenDiario();
         } else if (action === "getData" && sheetName) {
             result = getData(sheetName);
+        } else if (action === "getConfiguracion") {
+            // 🆕 FASE 1: Endpoint para obtener configuración de horarios
+            result = getConfiguracion();
         } else if (action === "getCotizacionesPendientes") {
             // 🆕 FASE 3: Endpoint para obtener cotizaciones pendientes
             result = { status: 'success', data: getCotizacionesPendientes() };
+        } else if (action === "getHistorialFacturas") {
+            // 🆕 FASE 1: ERP - Historial de Facturas
+            result = { status: 'success', data: getHistorialFacturas() };
+        } else if (action === "getEstadisticasAvanzadas") {
+            // 🆕 FASE 2: ERP - Estadísticas Avanzadas
+            result = { status: 'success', data: getEstadisticasAvanzadas() };
+        } else if (action === "getResumenCaja") {
+            // 🆕 FASE 3: ERP - Cierre de Caja
+            const fecha = e.parameter.fecha || null;
+            result = { status: 'success', data: getResumenCaja(fecha) };
+        } else if (action === "migrarEsquema") {
+            // 🛠️ MIGRACIÓN ONE-OFF
+            result = { status: 'success', message: migrarColumnasContactos() };
+        } else if (action === "instalarSistema") {
+            // 🛠️ INSTALACIÓN COMPLETA (Reseteo/Init)
+            result = { status: 'success', message: instalarSistema() };
         } else {
             result = { status: "error", message: `Acción GET '${action}' no válida o faltan parámetros.` };
         }
@@ -139,6 +158,21 @@ function doPost(e) {
                 metodo_pago: requestData.metodo_pago || 'Efectivo',
                 fecha: requestData.fecha || new Date()
             });
+        } else if (action === 'actualizarConfiguracion') {
+            // 🆕 FASE 1: Endpoint para actualizar configuración de reservas
+            result = actualizarConfiguracion(requestData.clave, requestData.valor);
+        } else if (action === 'anularFactura') {
+            // 🆕 FASE 1: ERP - Anulación de Factura
+            result = anularFactura(requestData.order_id, requestData.motivo);
+        } else if (action === 'registrarCierreCaja') {
+            // 🆕 FASE 3: ERP - Registrar Cierre
+            result = registrarCierreCaja(requestData.datosCierre);
+        } else if (action === 'registrarMantenimiento') {
+            // 🆕 FASE 2: CRUD Genérico (Guardar/Editar)
+            result = guardarRegistro(requestData.tipo, requestData.datos);
+        } else if (action === 'eliminarMantenimiento') {
+            // 🆕 FASE 2: CRUD Genérico (Eliminar)
+            result = eliminarRegistro(requestData.tipo, requestData.id);
         } else {
             result = { status: "error", message: "Acción POST no reconocida." };
         }
@@ -459,7 +493,13 @@ function getData(sheetName) {
     }
 
     const data = sheet.getDataRange().getValues();
-    const headers = data[0];
+    // Normalizar cabeceras: minusculas, sin tildes, espacios x guiones bajos (opcional)
+    const headers = data[0].map(h => 
+        String(h).toLowerCase().trim()
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Quitar tildes
+            .replace(/\s+/g, '_') // Espacios a guion bajo (opcional, pero util)
+            .replace(/[^a-z0-9_]/g, "") // Solo alfanumericos y guion bajo
+    );
     const rows = data.slice(1);
 
     const mappedData = rows.map(row => {
