@@ -418,6 +418,7 @@
     gap: 15px;
     align-items: center;
     transition: background 0.2s;
+
 }
 
 .cart-item:hover {
