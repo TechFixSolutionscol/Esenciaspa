@@ -82,6 +82,15 @@ function doGet(e) {
         } else if (action === "instalarSistema") {
             // 🛠️ INSTALACIÓN COMPLETA (Reseteo/Init)
             result = { status: 'success', message: instalarSistema() };
+        } else if (action === "listarImagenesCatalogo") {
+            // 🆕 FASE 2: Imágenes
+            result = { status: 'success', data: listarImagenesCatalogo() };
+        } else if (action === "getProductosSinImagen") {
+            // 🆕 FASE 2: Imágenes
+            result = { status: 'success', data: getProductosSinImagen() };
+        } else if (action === "getSystemAlerts") {
+            // 🆕 FASE 3: Alertas
+            result = { status: 'success', data: getSystemAlerts() };
         } else {
             result = { status: "error", message: `Acción GET '${action}' no válida o faltan parámetros.` };
         }
@@ -173,6 +182,12 @@ function doPost(e) {
         } else if (action === 'eliminarMantenimiento') {
             // 🆕 FASE 2: CRUD Genérico (Eliminar)
             result = eliminarRegistro(requestData.tipo, requestData.id);
+        } else if (action === 'subirYAsociarImagen') {
+            // 🆕 FASE 2: Imágenes
+            result = subirYAsociarImagen(requestData);
+        } else if (action === 'eliminarImagenDeProducto') {
+            // 🆕 FASE 2: Imágenes
+            result = eliminarImagenDeProducto(requestData.productoId);
         } else {
             result = { status: "error", message: "Acción POST no reconocida." };
         }
