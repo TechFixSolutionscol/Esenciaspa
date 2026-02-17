@@ -56,7 +56,8 @@ async function cargarCatalogoConImagenes() {
         if (data.status === 'success' && data.data.length > 0) {
             container.innerHTML = data.data.map(p => `
                 <div class="imagen-card">
-                    <img src="${p.imagenUrl}" alt="${p.nombre}" onerror="this.src='assets/img/placeholder.png'">
+                    <img src="${p.imagenUrl}" alt="${p.nombre}" 
+                        onerror="this.onerror=null; cargarImagenBase64(this, '${p.imagenDriveId}')">
                     <div class="imagen-info">
                         <h4>${p.nombre}</h4>
                         <p>${p.categoria || 'Sin categoría'}</p>
@@ -174,14 +175,14 @@ async function subirImagen() {
 
         const response = await fetch(SCRIPT_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
 
         const result = await response.json();
 
         if (result.success) {
-            mostrarNotificacion('✅ Imagen subida exitosamente', 'success');
+            console.log('Imagen subida a:', result.folderUrl);
+            mostrarNotificacion('✅ Imagen subida a carpeta: ' + (result.folderUrl ? 'EsenciaSpa_Imagenes (Ver Consola)' : ''), 'success');
             cerrarModalSubirImagen();
             cargarProductosSinImagen();
             cargarCatalogoConImagenes();
@@ -224,7 +225,6 @@ async function eliminarImagen(productoId, productoNombre) {
     try {
         const response = await fetch(SCRIPT_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 action: 'eliminarImagenDeProducto',
                 productoId: productoId
@@ -243,6 +243,35 @@ async function eliminarImagen(productoId, productoNombre) {
     } catch (e) {
         console.error('Error eliminando imagen:', e);
         mostrarNotificacion('Error de conexión', 'error');
+    }
+}
+
+/**
+ * Cargar imagen alternativa en Base64 cuando falla el link directo
+ */
+async function cargarImagenBase64(imgElement, driveId) {
+    if (!driveId || driveId === 'undefined') {
+        imgElement.src = 'https://placehold.co/150?text=Sin+Imagen';
+        return;
+    }
+
+    try {
+        console.log('🔄 Triggered fallback: Cargando imagen Base64 para ID:', driveId);
+        // Poner loader
+        imgElement.src = 'https://placehold.co/150?text=Cargando...';
+
+        const response = await fetch(`${SCRIPT_URL}?action=getImageContent&id=${driveId}`);
+        const result = await response.json();
+
+        if (result.status === 'success' && result.data) {
+            imgElement.src = `data:${result.data.mime};base64,${result.data.base64}`;
+        } else {
+            console.error('Error backend Base64:', result);
+            imgElement.src = 'https://placehold.co/150?text=Error';
+        }
+    } catch (e) {
+        console.error('Error cargando imagen base64:', e);
+        imgElement.src = 'https://placehold.co/150?text=Error+Carga';
     }
 }
 

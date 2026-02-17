@@ -145,16 +145,22 @@ function getCotizacionesPendientes() {
     const cliHeadRaw = cliValues[0].map(h => String(h).trim().toLowerCase());
     
     // Función helper para buscar índice
-    const findCol = (aliases) => cliHeadRaw.findIndex(h => aliases.some(a => h.includes(a)));
+    const findCol = (aliases) => {
+        // First try exact match
+        let idx = cliHeadRaw.findIndex(h => aliases.some(a => h === a));
+        if (idx !== -1) return idx;
+        // Then partial match
+        return cliHeadRaw.findIndex(h => aliases.some(a => h.includes(a)));
+    };
 
-    let IDX_CLI_ID = findCol(['id', 'código', 'codigo', 'documento']); // Prioriza ID
-    if (IDX_CLI_ID === -1) IDX_CLI_ID = 0; // Fallback extremo a col A
+    let IDX_CLI_ID = findCol(['id', 'codigo', 'código', 'documento']); 
+    if (IDX_CLI_ID === -1) IDX_CLI_ID = 0; 
 
     let IDX_CLI_NOMBRE = findCol(['nombre', 'cliente', 'nombres', 'razón social']);
-    if (IDX_CLI_NOMBRE === -1) IDX_CLI_NOMBRE = 1; // Fallback extremo a col B
+    if (IDX_CLI_NOMBRE === -1) IDX_CLI_NOMBRE = 1;
 
-    let IDX_CLI_TEL = findCol(['telefono', 'teléfono', 'celular', 'whatsapp', 'movil']);
-    if (IDX_CLI_TEL === -1) IDX_CLI_TEL = 2; // Fallback extremo a col C
+    let IDX_CLI_TEL = findCol(['telefono', 'teléfono', 'celular', 'movil']);
+    if (IDX_CLI_TEL === -1) IDX_CLI_TEL = 2;
 
     // cliData tiene los datos sin headers, así que usamos cliValues slice(1)
     const clientesSource = cliValues.slice(1);

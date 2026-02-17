@@ -237,3 +237,38 @@ function getEventosDelDia(fecha) {
     return [];
   }
 }
+
+/**
+ * Helper function para actualizar fecha/hora de un evento
+ * @param {string} eventId - ID del evento
+ * @param {string} nuevaFecha - Nueva fecha YYYY-MM-DD
+ * @param {string} nuevaHora - Nueva hora HH:mm
+ * @param {number} duracionMinutos - Duración en minutos
+ * @returns {Object} { success }
+ */
+function updateCalendarEventTime(eventId, nuevaFecha, nuevaHora, duracionMinutos) {
+  try {
+    const fechaObj = new Date(nuevaFecha + 'T00:00:00-05:00');
+    const [horas, minutos] = nuevaHora.split(':');
+    fechaObj.setHours(parseInt(horas), parseInt(minutos), 0, 0);
+    
+    const horaFin = new Date(fechaObj.getTime() + (duracionMinutos * 60000));
+    
+    const newData = {
+      start: {
+        dateTime: fechaObj.toISOString(),
+        timeZone: 'America/Bogota'
+      },
+      end: {
+        dateTime: horaFin.toISOString(),
+        timeZone: 'America/Bogota'
+      }
+    };
+    
+    return updateCalendarEvent(eventId, newData);
+    
+  } catch (e) {
+    Logger.log('Error updateCalendarEventTime: ' + e);
+    return { success: false, error: e.message };
+  }
+}

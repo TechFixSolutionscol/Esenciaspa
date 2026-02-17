@@ -1265,3 +1265,39 @@ function exportDataToExcel(data, fileName, sheetName = "Sheet1") {
     XLSX.writeFile(wb, fullFileName);
     showToast(`Archivo generado: ${fullFileName}`, "success");
 }
+
+/* =========================================
+   MIGRACIÓN DE DATOS (Fase 7)
+   ========================================= */
+async function ejecutarMigracion() {
+    if (!confirm('⚠️ ¿Estás seguro de iniciar la migración?\n\nEsto leerá los servicios estáticos y los guardará en la base de datos si no existen. Esta acción no duplica datos si los nombres coinciden, pero es mejor ejecutarla solo una vez.')) {
+        return;
+    }
+
+    const btn = document.querySelector('button[onclick="ejecutarMigracion()"]');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Migrando...';
+    }
+
+    try {
+        const response = await fetch(`${SCRIPT_URL}?action=runMigration`);
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            alert('✅ Éxito: ' + result.message);
+            // Recargar productos para ver los cambios si estamos en esa pestaña
+            if (typeof cargarInventario === 'function') cargarInventario();
+        } else {
+            alert('❌ Error: ' + result.message);
+        }
+    } catch (e) {
+        console.error(e);
+        alert('Error de conexión durante la migración.');
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-database"></i> Migrar Servicios Estáticos';
+        }
+    }
+}

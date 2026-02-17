@@ -76,97 +76,6 @@ function calcularDuracionCita(servicioId, requiereRetiro = false) {
 }
 
 /**
- * Buscar o crear cliente
- * @param {Object} clienteData - Datos del cliente
- * @returns {Object} { clienteId, esNuevo }
- */
-function buscarOCrearCliente(clienteData) {
-  try {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-    const clientesSheet = ss.getSheetByName('Clientes');
-    
-    const data = clientesSheet.getDataRange().getValues();
-    const headers = data[0];
-    
-    // Detección robusta de columnas
-    const headersRaw = headers.map(h => String(h).trim().toLowerCase());
-    const findCol = (aliases) => headersRaw.findIndex(h => aliases.some(a => h.includes(a)));
-
-    let telefonoCol = findCol(['telefono', 'teléfono', 'celular', 'whatsapp']);
-    if (telefonoCol === -1) telefonoCol = 2; // Fallback
-
-    let emailCol = findCol(['email', 'correo']); // Puede ser -1
-
-    let idCol = findCol(['id', 'codigo', 'código', 'documento']); 
-    if (idCol === -1) idCol = 0; // Fallback
-    
-    // Buscar por teléfono o email
-    for (let i = 1; i < data.length; i++) {
-        const telefono = String(data[i][telefonoCol] || '').trim().replace(/\D/g, ''); // Limpiar teléfono
-        const email = String(data[i][emailCol] || '').trim().toLowerCase();
-        
-        const searchTel = String(clienteData.telefono || '').trim().replace(/\D/g, '');
-        const searchEmail = String(clienteData.email || '').trim().toLowerCase();
-      
-        // Comparación laxa de teléfono (si contiene al menos 7 dígitos coincidentes)
-        const telMatch = searchTel && telefono && (telefono.includes(searchTel) || searchTel.includes(telefono));
-        const emailMatch = emailCol !== -1 && searchEmail && email === searchEmail;
-      
-        if (telMatch || emailMatch) {
-            return {
-                success: true,
-                clienteId: data[i][idCol],
-                esNuevo: false
-            };
-        }
-    }
-    
-    // Cliente no existe, crear nuevo usando ID Estandarizado
-    // Intentamos usar la función global si existe, si no, generamos uno local compatible
-    let nuevoId;
-    try {
-        nuevoId = generateUniqueAppId(); 
-    } catch(e) {
-        nuevoId = 'id-' + (new Date().getTime().toString(36) + Math.random().toString(36).substring(2, 9)).toUpperCase();
-    }
-    
-    // Construir fila para nuevo cliente respetando columnas
-    const newRow = new Array(headers.length).fill('');
-    
-    // Indices adicionales para completar
-    let nombreCol = findCol(['nombre', 'cliente']);
-    if (nombreCol === -1) nombreCol = 1;
-
-    // Asignar valores
-    newRow[idCol] = nuevoId;
-    newRow[nombreCol] = clienteData.nombre;
-    newRow[telefonoCol] = clienteData.telefono;
-    if (emailCol !== -1) newRow[emailCol] = clienteData.email || '';
-    
-    // Llenar fecha registro si existe columna 'fecha' o 'registro'
-    let fechaRegCol = findCol(['fecha', 'registro', 'created']);
-    if (fechaRegCol !== -1) newRow[fechaRegCol] = new Date();
-
-    clientesSheet.appendRow(newRow);
-    
-    Logger.log(`✅ Cliente creado: ${nuevoId}`);
-    
-    return {
-      success: true,
-      clienteId: nuevoId,
-      esNuevo: true
-    };
-    
-  } catch (e) {
-    Logger.log('Error buscarOCrearCliente: ' + e);
-    return {
-      success: false,
-      error: e.message
-    };
-  }
-}
-
-/**
  * Crear una nueva cita con duración calculada
  * @param {Object} citaData - Datos de la cita
  * @returns {Object} Resultado de la operación
@@ -410,6 +319,274 @@ function cambiarEstadoCita(citaId, nuevoEstado) {
     
   } catch (e) {
     Logger.log('Error cambiarEstadoCita: ' + e);
+    return { success: false, error: e.message };
+  }
+}
+
+/**
+ * Obtener citas del día actual
+ * @returns {Array} Lista de citas de hoy con información de cliente y servicio
+ */
+function getCitasHoy() {
+  try {
+    const hoy = Utilities.formatDate(new Date(), 'America/Bogota', 'yyyy-MM-dd');
+    return getCitasPorFecha(hoy);
+  } catch (e) {
+    Logger.log('Error getCitasHoy: ' + e);
+    return [];
+  }
+}
+
+/**
+ * Obtener estadísticas de citas
+ * @param {string} fechaInicio - Fecha inicio en formato YYYY-MM-DD (opcional)
+ * @param {string} fechaFin - Fecha fin en formato YYYY-MM-DD (opcional)
+ * @returns {Object} Estadísticas de citas
+ */
+function getEstadisticasCitas(fechaInicio, fechaFin) {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const citasSheet = ss.getSheetByName('Citas');
+    const cotizacionesSheet = ss.getSheetByName('Cotizaciones');
+    
+    const citasData = citasSheet.getDataRange().getValues();
+    const citasHeaders = citasData[0];
+    
+    const fechaCol = citasHeaders.indexOf('fecha');
+    const estadoCol = citasHeaders.indexOf('estado');
+    
+    // Fecha de hoy para filtro
+    const hoy = Utilities.formatDate(new Date(), 'America/Bogota', 'yyyy-MM-dd');
+    
+    let citasHoy = 0;
+    let citasPendientes = 0;
+    let citasConfirmadas = 0;
+    let citasAtendidas = 0;
+    let citasCanceladas = 0;
+    
+    for (let i = 1; i < citasData.length; i++) {
+      const fechaCita = citasData[i][fechaCol];
+      const fechaStr = fechaCita instanceof Date 
+        ? Utilities.formatDate(fechaCita, 'America/Bogota', 'yyyy-MM-dd')
+        : String(fechaCita).split('T')[0];
+      
+      const estado = String(citasData[i][estadoCol] || '').toUpperCase();
+      
+      // Contar citas de hoy
+      if (fechaStr === hoy) {
+        citasHoy++;
+      }
+      
+      // Contar por estado
+      switch (estado) {
+        case 'PENDIENTE':
+          citasPendientes++;
+          break;
+        case 'CONFIRMADA':
+          citasConfirmadas++;
+          break;
+        case 'ATENDIDA':
+          citasAtendidas++;
+          break;
+        case 'CANCELADA':
+          citasCanceladas++;
+          break;
+      }
+    }
+    
+    // Calcular ingresos proyectados del día
+    let ingresosHoy = 0;
+    if (cotizacionesSheet) {
+      const cotData = cotizacionesSheet.getDataRange().getValues();
+      const cotHeaders = cotData[0];
+      
+      const citaIdCol = cotHeaders.indexOf('cita_id');
+      const totalCol = cotHeaders.indexOf('total');
+      const estadoCotCol = cotHeaders.indexOf('estado');
+      
+      // Obtener IDs de citas de hoy
+      const citasHoyIds = [];
+      for (let i = 1; i < citasData.length; i++) {
+        const fechaCita = citasData[i][fechaCol];
+        const fechaStr = fechaCita instanceof Date 
+          ? Utilities.formatDate(fechaCita, 'America/Bogota', 'yyyy-MM-dd')
+          : String(fechaCita).split('T')[0];
+        
+        if (fechaStr === hoy) {
+          citasHoyIds.push(citasData[i][0]); // ID de cita
+        }
+      }
+      
+      // Sumar totales de cotizaciones de hoy
+      for (let i = 1; i < cotData.length; i++) {
+        const citaId = cotData[i][citaIdCol];
+        const estado = String(cotData[i][estadoCotCol] || '').toLowerCase();
+        
+        if (citasHoyIds.includes(citaId) && estado !== 'cancelada') {
+          ingresosHoy += parseFloat(cotData[i][totalCol]) || 0;
+        }
+      }
+    }
+    
+    return {
+      citasHoy: citasHoy,
+      citasPendientes: citasPendientes,
+      citasConfirmadas: citasConfirmadas,
+      citasAtendidas: citasAtendidas,
+      citasCanceladas: citasCanceladas,
+      ingresosHoy: ingresosHoy,
+      fecha: hoy
+    };
+    
+  } catch (e) {
+    Logger.log('Error getEstadisticasCitas: ' + e);
+    return {
+      citasHoy: 0,
+      citasPendientes: 0,
+      citasConfirmadas: 0,
+      citasAtendidas: 0,
+      citasCanceladas: 0,
+      ingresosHoy: 0,
+      error: e.message
+    };
+  }
+}
+
+/**
+ * Cancelar una cita
+ * @param {string} citaId - ID de la cita
+ * @param {string} motivo - Motivo de la cancelación
+ * @returns {Object} { success, message }
+ */
+function cancelarCita(citaId, motivo) {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const citasSheet = ss.getSheetByName('Citas');
+    
+    const data = citasSheet.getDataRange().getValues();
+    const headers = data[0];
+    
+    const idCol = headers.indexOf('id');
+    const estadoCol = headers.indexOf('estado');
+    const observCol = headers.indexOf('observaciones');
+    const eventIdCol = headers.indexOf('calendar_event_id');
+    const updatedCol = headers.indexOf('updated_at');
+    
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][idCol] === citaId) {
+        const eventId = data[i][eventIdCol];
+        
+        // Actualizar estado y observaciones
+        citasSheet.getRange(i + 1, estadoCol + 1).setValue('CANCELADA');
+        
+        const observActual = data[i][observCol] || '';
+        const nuevaObserv = observActual + `\n[CANCELADA: ${motivo}]`;
+        citasSheet.getRange(i + 1, observCol + 1).setValue(nuevaObserv);
+        citasSheet.getRange(i + 1, updatedCol + 1).setValue(new Date());
+        
+        // Eliminar o actualizar evento en Calendar
+        if (eventId) {
+          try {
+            deleteCalendarEvent(eventId);
+            Logger.log(`✅ Evento ${eventId} eliminado de Calendar`);
+          } catch (e) {
+            Logger.log(`⚠️ No se pudo eliminar evento de Calendar: ${e.message}`);
+          }
+        }
+        
+        Logger.log(`✅ Cita ${citaId} cancelada. Motivo: ${motivo}`);
+        return { 
+          success: true, 
+          message: 'Cita cancelada exitosamente'
+        };
+      }
+    }
+    
+    return { success: false, message: 'Cita no encontrada' };
+    
+  } catch (e) {
+    Logger.log('Error cancelarCita: ' + e);
+    return { success: false, error: e.message };
+  }
+}
+
+/**
+ * Reagendar una cita
+ * @param {string} citaId - ID de la cita
+ * @param {string} nuevaFecha - Nueva fecha en formato YYYY-MM-DD
+ * @param {string} nuevaHora - Nueva hora en formato HH:mm
+ * @returns {Object} { success, message }
+ */
+function reagendarCita(citaId, nuevaFecha, nuevaHora) {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const citasSheet = ss.getSheetByName('Citas');
+    
+    const data = citasSheet.getDataRange().getValues();
+    const headers = data[0];
+    
+    const idCol = headers.indexOf('id');
+    const fechaCol = headers.indexOf('fecha');
+    const horaInicioCol = headers.indexOf('hora_inicio');
+    const horaFinCol = headers.indexOf('hora_fin');
+    const duracionCol = headers.indexOf('duracion_min');
+    const eventIdCol = headers.indexOf('calendar_event_id');
+    const updatedCol = headers.indexOf('updated_at');
+    
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][idCol] === citaId) {
+        const duracion = parseInt(data[i][duracionCol]) || 60;
+        const eventId = data[i][eventIdCol];
+        
+        // Validar disponibilidad en la nueva fecha/hora
+        const disponibilidad = checkAvailability(nuevaFecha, nuevaHora, duracion);
+        
+        if (!disponibilidad.available) {
+          return {
+            success: false,
+            message: disponibilidad.message,
+            conflicts: disponibilidad.conflicts
+          };
+        }
+        
+        // Calcular nueva hora de fin
+        const fechaObj = new Date(nuevaFecha + 'T00:00:00-05:00');
+        const [horas, minutos] = nuevaHora.split(':');
+        fechaObj.setHours(parseInt(horas), parseInt(minutos), 0, 0);
+        const horaFin = new Date(fechaObj.getTime() + (duracion * 60000));
+        const horaFinStr = Utilities.formatDate(horaFin, 'America/Bogota', 'HH:mm');
+        
+        // Actualizar en Sheets
+        citasSheet.getRange(i + 1, fechaCol + 1).setValue(nuevaFecha);
+        citasSheet.getRange(i + 1, horaInicioCol + 1).setValue(nuevaHora);
+        citasSheet.getRange(i + 1, horaFinCol + 1).setValue(horaFinStr);
+        citasSheet.getRange(i + 1, updatedCol + 1).setValue(new Date());
+        
+        // Actualizar evento en Calendar
+        if (eventId) {
+          try {
+            updateCalendarEventTime(eventId, nuevaFecha, nuevaHora, duracion);
+            Logger.log(`✅ Evento ${eventId} actualizado en Calendar`);
+          } catch (e) {
+            Logger.log(`⚠️ No se pudo actualizar evento en Calendar: ${e.message}`);
+          }
+        }
+        
+        Logger.log(`✅ Cita ${citaId} reagendada a ${nuevaFecha} ${nuevaHora}`);
+        return { 
+          success: true, 
+          message: 'Cita reagendada exitosamente',
+          nuevaFecha: nuevaFecha,
+          nuevaHora: nuevaHora,
+          horaFin: horaFinStr
+        };
+      }
+    }
+    
+    return { success: false, message: 'Cita no encontrada' };
+    
+  } catch (e) {
+    Logger.log('Error reagendarCita: ' + e);
     return { success: false, error: e.message };
   }
 }

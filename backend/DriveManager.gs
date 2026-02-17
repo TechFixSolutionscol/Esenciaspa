@@ -4,8 +4,29 @@
  * Esencia Spa - Sistema de Gestión
  */
 
-// 🔴 IMPORTANTE: Reemplazar con el ID de tu carpeta de Drive
-const DRIVE_FOLDER_ID = 'TU_FOLDER_ID_AQUI'; // Copiar del PASO 3 de FASE 0
+// 🔴 IMPORTANTE: Reemplazar con el ID de tu carpeta de Drive si deseas una específica
+const DRIVE_FOLDER_ID = 'TU_FOLDER_ID_AQUI'; 
+
+function getDriveFolder() {
+  if (DRIVE_FOLDER_ID !== 'TU_FOLDER_ID_AQUI') {
+    try {
+      return DriveApp.getFolderById(DRIVE_FOLDER_ID);
+    } catch (e) {
+      Logger.log('⚠️ ID de carpeta inválido, creando nueva carpeta...');
+    }
+  }
+  
+  // Buscar carpeta por nombre
+  const folderName = 'EsenciaSpa_Imagenes';
+  const folders = DriveApp.getFoldersByName(folderName);
+  
+  if (folders.hasNext()) {
+    return folders.next();
+  } else {
+    // Crear nueva carpeta
+    return DriveApp.createFolder(folderName);
+  }
+}
 
 /**
  * Subir imagen a Google Drive
@@ -23,25 +44,35 @@ function uploadImageToDrive(fileData, productoId) {
     );
     
     // Obtener carpeta
-    const folder = DriveApp.getFolderById(DRIVE_FOLDER_ID);
+    const folder = getDriveFolder();
     
     // Crear archivo
     const file = folder.createFile(blob);
     
-    // Hacer público
-    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    // Intentar hacer público (puede fallar por políticas de dominio)
+    let publicUrl = `https://drive.google.com/uc?export=view&id=${file.getId()}`;
+    try {
+        file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    } catch (e) {
+        Logger.log('⚠️ No se pudo hacer público globalmente: ' + e);
+        try {
+            // Intentar compartir con el dominio (Organización)
+            file.setSharing(DriveApp.Access.DOMAIN_WITH_LINK, DriveApp.Permission.VIEW);
+            Logger.log('✅ Compartido con el dominio/organización');
+        } catch (e2) {
+             Logger.log('⚠️ Falló compartir con dominio, archivo privado: ' + e2);
+        }
+    }
     
-    // Obtener URL pública
     const fileId = file.getId();
-    const publicUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
-    
-    Logger.log(`✅ Imagen subida: ${fileId}`);
+    Logger.log(`✅ Imagen subida: ${fileId} en carpeta ${folder.getName()} (${folder.getUrl()})`);
     
     return {
       success: true,
       fileId: fileId,
       publicUrl: publicUrl,
-      fileName: fileData.fileName
+      fileName: fileData.fileName,
+      folderUrl: folder.getUrl() // Return folder URL to user
     };
     
   } catch (e) {
@@ -90,19 +121,57 @@ function asociarImagenAProducto(productoId, imageData) {
     const data = productosSheet.getDataRange().getValues();
     const headers = data[0];
     
-    const idCol = headers.indexOf('id');
-    const imagenUrlCol = headers.indexOf('imagen_url');
-    const imagenDriveIdCol = headers.indexOf('imagen_drive_id');
-    
+    let idCol = headers.indexOf('id');
+    let imagenUrlCol = headers.indexOf('imagen_url');
+    let imagenDriveIdCol = headers.indexOf('imagen_drive_id');
+
+    // 🆕 Si las columnas de imagen no existen, crearlas
+    if (imagenUrlCol === -1 || imagenDriveIdCol === -1) {
+      Logger.log('⚠️ Columnas de imagen faltantes, creándolas...');
+      const lastCol = productosSheet.getLastColumn();
+      
+      if (imagenUrlCol === -1) {
+        productosSheet.getRange(1, lastCol + 1).setValue('imagen_url');
+        imagenUrlCol = lastCol; // Ahora es lastCol (0-indexed logic for headers array? No, headers array length logic)
+        // Wait, headers array is 0-indexed.
+        // If lastCol is 5, new col is 6. Index in headers array would be 5.
+        // Let's just re-fetch headers to be safe or use calculated index.
+      }
+      
+      const newLastCol = productosSheet.getLastColumn();
+      if (imagenDriveIdCol === -1) {
+        productosSheet.getRange(1, newLastCol + 1).setValue('imagen_drive_id');
+        imagenDriveIdCol = newLastCol; 
+      }
+      
+      // Update headers array for subsequent logic if needed, but we have the indices now.
+      // Note: indexOf returns 0-based index. 
+      // If we add at col 6 (index 5), then imagenUrlCol should be 5.
+      // But let's keep it simple: re-read headers or just use the new column index.
+      // Actually, standard practice:
+      
+      // Re-leer headers para asegurar indices correctos
+      const newData = productosSheet.getDataRange().getValues();
+      const newHeaders = newData[0];
+      imagenUrlCol = newHeaders.indexOf('imagen_url');
+      imagenDriveIdCol = newHeaders.indexOf('imagen_drive_id');
+      
+      // Re-leer data también si se necesita (aunque las filas siguen igual)
+    }
+
     for (let i = 1; i < data.length; i++) {
-      if (data[i][idCol] === productoId) {
+        const rowId = String(data[i][idCol]).trim();
+        if (rowId === String(productoId).trim()) { // Comparación robusta
+            
         // Si ya tenía imagen, eliminar la anterior
         const oldImageId = data[i][imagenDriveIdCol];
         if (oldImageId) {
-          deleteImageFromDrive(oldImageId);
+          try { deleteImageFromDrive(oldImageId); } catch(e) {}
         }
         
         // Actualizar con nueva imagen
+        // getRange(row, col) -> col is 1-based.
+        // imagenUrlCol is 0-based index from headers array. So +1 is correct.
         productosSheet.getRange(i + 1, imagenUrlCol + 1).setValue(imageData.publicUrl);
         productosSheet.getRange(i + 1, imagenDriveIdCol + 1).setValue(imageData.fileId);
         
@@ -284,5 +353,28 @@ function getProductosSinImagen() {
   } catch (e) {
     Logger.log('Error getProductosSinImagen: ' + e);
     return [];
+  }
+}
+
+/**
+ * Obtener contenido de imagen en Base64 desde Drive
+ * Para saltar restricciones de dominio en previews directos
+ */
+function getImageContent(fileId) {
+  try {
+    const file = DriveApp.getFileById(fileId);
+    const blob = file.getBlob();
+    const base64 = Utilities.base64Encode(blob.getBytes());
+    
+    return {
+      status: 'success',
+      data: {
+        mime: blob.getContentType(),
+        base64: base64
+      }
+    };
+  } catch (e) {
+    Logger.log('Error getImageContent: ' + e);
+    return { status: 'error', message: e.toString() };
   }
 }

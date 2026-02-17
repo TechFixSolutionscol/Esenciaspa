@@ -9,49 +9,73 @@
 let configuracionActual = null;
 let configuracionCargada = false;
 
+console.log('🔧 Módulo reservas_config.js cargado');
+
 // Inicializar cuando la sección se active
 document.addEventListener('DOMContentLoaded', () => {
-    // Cargar configuración al hacer click en el menú
-    const menuLink = document.querySelector('a[data-section="reservas-config"]');
-    if (menuLink) {
-        menuLink.addEventListener('click', () => {
+    console.log('🔧 Inicializando reservas_config...');
+
+    // Cargar configuración al hacer click en el tab de Reservas dentro de Configuración
+    const tabReservas = document.getElementById('tabConfigReservas');
+    if (tabReservas) {
+        console.log('✅ Tab de Reservas encontrado');
+        tabReservas.addEventListener('click', () => {
+            console.log('👆 Click en tab Reservas');
             setTimeout(() => {
                 if (!configuracionCargada) {
+                    console.log('📥 Cargando configuración por primera vez...');
                     cargarConfiguracion();
                 }
-            }, 100);
+            }, 150);
         });
+    } else {
+        console.warn('⚠️ No se encontró el tab de Reservas (tabConfigReservas)');
     }
 
-    // Observer para detectar cuando la sección se muestra
-    const seccion = document.getElementById('reservas-config');
-    if (seccion) {
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                    if (seccion.classList.contains('active') && !configuracionCargada) {
-                        cargarConfiguracion();
-                    }
+    // También cargar cuando se abre la sección de configuración por primera vez
+    const menuConfigLink = document.querySelector('a[data-section="configuracion"]');
+    if (menuConfigLink) {
+        console.log('✅ Link de Configuración encontrado');
+        menuConfigLink.addEventListener('click', () => {
+            // Esperar a que se muestre la sección
+            setTimeout(() => {
+                const tabReservasBtn = document.getElementById('tabConfigReservas');
+                // Si el tab de reservas está activo, cargar
+                if (tabReservasBtn && tabReservasBtn.classList.contains('active') && !configuracionCargada) {
+                    console.log('📥 Cargando configuración (tab activo)...');
+                    cargarConfiguracion();
                 }
-            });
+            }, 250);
         });
-
-        observer.observe(seccion, { attributes: true });
     }
 
-    // Botón refrescar
-    const refreshBtn = document.getElementById('refreshConfigBtn');
-    if (refreshBtn) {
-        refreshBtn.addEventListener('click', () => {
+    // Botón refrescar - usar delegación de eventos para botones que pueden estar ocultos
+    document.addEventListener('click', function (e) {
+        if (e.target && e.target.id === 'refreshConfigBtn') {
+            console.log('🔄 Click en botón Refrescar');
+            e.preventDefault();
             cargarConfiguracion();
-        });
-    }
+        }
+    });
 
-    // Botón guardar
-    const guardarBtn = document.getElementById('guardarConfigBtn');
-    if (guardarBtn) {
-        guardarBtn.addEventListener('click', guardarConfiguracion);
-    }
+    // Verificar si el botón existe (puede estar oculto)
+    setTimeout(() => {
+        const refreshBtn = document.getElementById('refreshConfigBtn');
+        if (refreshBtn) {
+            console.log('✅ Botón Refrescar encontrado en el DOM');
+        } else {
+            console.warn('⚠️ Botón Refrescar NO encontrado (refreshConfigBtn)');
+        }
+    }, 500);
+
+    // Botón guardar - también con delegación
+    document.addEventListener('click', function (e) {
+        if (e.target && e.target.id === 'guardarConfigReservas') {
+            console.log('💾 Click en botón Guardar');
+            e.preventDefault();
+            guardarConfiguracion();
+        }
+    });
 });
 
 /**

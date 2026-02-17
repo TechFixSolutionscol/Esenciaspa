@@ -19,7 +19,7 @@ const PRODUCTOS_HEADERS = ["id", "nombre", "código", "categoría", "tipo", "pre
 const COMPRAS_HEADERS = ["id", "producto_id", "cantidad", "precio_compra", "fecha", "proveedor"];
 const VENTAS_HEADERS = ["id", "producto_id", "cantidad", "precio_venta", "fecha", "cliente"];
 const PROVEEDORES_HEADERS = ["id", "nombre", "telefono"];
-const CLIENTES_HEADERS = ["id", "nombre", "telefono"];
+const CLIENTES_HEADERS = ["id", "nombre", "telefono","Documento (CC/NIT)","Direccion","Notas"];
 const RESUMEN_HEADERS = ["fecha", "total_ventas", "total_compras", "ganancia", "productos_vendidos"];
 const USUARIOS_HEADERS = ["usuario", "hash", "rol", "created"];
 // Credenciales por defecto (se crearán automáticamente al inicializar la BD)
@@ -91,6 +91,84 @@ function doGet(e) {
         } else if (action === "getSystemAlerts") {
             // 🆕 FASE 3: Alertas
             result = { status: 'success', data: getSystemAlerts() };
+        } else if (action === "getClientes") {
+            // 🆕 FASE 5: CRM - Lista de Clientes
+            result = { status: 'success', data: getClientes() };
+        } else if (action === "getHistorialCliente") {
+            // 🆕 FASE 5: CRM - Historial
+            const id = e.parameter.id;
+            result = getHistorialCliente(id); // Ya devuelve estructura {success, ...}
+
+        } else if (action === "getMetricasGenerales") {
+            // 🆕 FASE 6: Reportes - Métricas Generales
+            const fi = e.parameter.fecha_inicio;
+            const ff = e.parameter.fecha_fin;
+            result = getMetricasGenerales(fi, ff);
+        } else if (action === "getReporteVentasDiarias") {
+            // 🆕 FASE 6: Reportes - Ventas Diarias
+            const fi = e.parameter.fecha_inicio;
+            const ff = e.parameter.fecha_fin;
+            result = getReporteVentasDiarias(fi, ff);
+        } else if (action === "getServiciosPopulares") {
+            // 🆕 FASE 6: Reportes - Servicios Populares
+            const limit = e.parameter.limit || 5;
+            result = getServiciosPopulares(limit);
+        } else if (action === "getImageContent") {
+            // 🆕 FASE 2: Imágenes - Fallback Base64
+            result = getImageContent(e.parameter.id);
+        } else if (action === "getServiciosPublicos") {
+            // 🆕 FASE 7: Servicios Públicos
+            result = { status: 'success', data: getServiciosPublicos() };
+        } else if (action === "runMigration") {
+            // 🆕 FASE 7: Migración Única
+            result = migrateStaticServices();
+        } else if (action === "getCitasHoy") {
+            // 🆕 FASE 3: Endpoint para obtener citas del día actual
+            result = { status: 'success', data: getCitasHoy() };
+        } else if (action === "getEstadisticasCitas") {
+            // 🆕 FASE 3: Endpoint para obtener estadísticas de citas
+            const fechaInicio = e.parameter.fecha_inicio || null;
+            const fechaFin = e.parameter.fecha_fin || null;
+            result = { status: 'success', data: getEstadisticasCitas(fechaInicio, fechaFin) };
+        } else if (action === "getCitasPorFecha") {
+            // 🆕 FASE 3: Endpoint para obtener citas por fecha específica
+            const fecha = e.parameter.fecha;
+            if (!fecha) {
+                result = { status: 'error', message: 'Parámetro "fecha" requerido' };
+            } else {
+                result = { status: 'success', data: getCitasPorFecha(fecha) };
+            }
+        } else if (action === "inicializarHistoriasClinicas") {
+            // 🆕 HISTORIA CLÍNICA: Inicializar hojas necesarias
+            result = inicializarHistoriasClinicas();
+        } else if (action === "verificarHistoriaExistente") {
+            // 🆕 HISTORIA CLÍNICA: Verificar si un cliente ya tiene HC
+            const clienteId = e.parameter.clienteId;
+            if (!clienteId) {
+                result = { success: false, message: 'Parámetro "clienteId" requerido' };
+            } else {
+                result = verificarHistoriaExistente(clienteId);
+            }
+        } else if (action === "buscarCliente") {
+            // 🆕 FASE 1: Buscar clientes para Historia Clínica
+            const query = e.parameter.query;
+            result = { status: 'success', data: buscarCliente(query) };
+        } else if (action === "obtenerHistoriaClinica") {
+            // 🆕 FASE 2: Obtener datos de HC
+            const historiaId = e.parameter.historiaId;
+            result = obtenerHistoriaClinica(historiaId);
+        } else if (action === "obtenerAntecedentes") {
+            // 🆕 FASE 2: Obtener antecedentes de HC
+            const historiaId = e.parameter.historiaId;
+            result = obtenerAntecedentes(historiaId);
+        } else if (action === "obtenerEvoluciones") {
+            // 🆕 FASE 2: Obtener evoluciones de HC
+            const historiaId = e.parameter.historiaId;
+            result = obtenerEvoluciones(historiaId);
+        } else if (action === "obtenerTratamientos") {
+            // 🆕 FASE 3: Obtener tratamientos de HC
+            const historiaId = e.parameter.historiaId;
+            result = obtenerTratamientos(historiaId);
         } else {
             result = { status: "error", message: `Acción GET '${action}' no válida o faltan parámetros.` };
         }
@@ -188,6 +266,40 @@ function doPost(e) {
         } else if (action === 'eliminarImagenDeProducto') {
             // 🆕 FASE 2: Imágenes
             result = eliminarImagenDeProducto(requestData.productoId);
+        } else if (action === 'cambiarEstadoCita') {
+            // 🆕 FASE 3: Endpoint para cambiar estado de cita
+            result = cambiarEstadoCita(requestData.cita_id, requestData.nuevo_estado);
+        } else if (action === 'cancelarCita') {
+            // 🆕 FASE 3: Endpoint para cancelar cita
+            result = cancelarCita(requestData.cita_id, requestData.motivo || 'No especificado');
+        } else if (action === 'reagendarCita') {
+            // 🆕 FASE 3: Endpoint para reagendar cita
+            result = reagendarCita(
+                requestData.cita_id,
+                requestData.nueva_fecha,
+                requestData.nueva_hora
+            );
+        } else if (action === 'crearHistoriaClinica') {
+            // 🆕 HISTORIA CLÍNICA: Crear nueva HC
+            result = crearHistoriaClinica(requestData);
+        } else if (action === 'agregarAntecedente') {
+            // 🆕 HISTORIA CLÍNICA: Antecedentes
+            result = agregarAntecedente(requestData);
+        } else if (action === 'agregarEvolucion') {
+            // 🆕 HISTORIA CLÍNICA: Evoluciones
+            result = agregarEvolucion(requestData);
+        } else if (action === 'crearTratamiento') {
+            // 🆕 HISTORIA CLÍNICA: Tratamientos (Crear)
+            result = crearTratamiento(requestData);
+        } else if (action === 'registrarAvanceTratamiento') {
+            // 🆕 HISTORIA CLÍNICA: Tratamientos (Avance)
+            result = registrarAvanceTratamiento(requestData.tratamiento_id);
+        } else if (action === 'agregarAntecedente') {
+            // 🆕 HISTORIA CLÍNICA: Agregar antecedente
+            result = agregarAntecedente(requestData);
+        } else if (action === 'agregarEvolucion') {
+            // 🆕 HISTORIA CLÍNICA: Agregar evolución
+            result = agregarEvolucion(requestData);
         } else {
             result = { status: "error", message: "Acción POST no reconocida." };
         }
